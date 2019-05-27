@@ -1,0 +1,57 @@
+ <div id="appintro" class="slider_wrapper">
+ <div class="slider">
+    <ul class="slides">
+      <li>
+        <img src="images/AppIntro/1.png"> <!-- random image -->
+        <div class="caption bottom center-align">
+          <h4 class="blue-text">Welcome to the worlds first Social Service Network</h4>
+          <h5 class="red-text"></h5>
+        </div>
+      </li>
+      <li>
+        <img src="images/AppIntro/2.png"> <!-- random image -->
+        <div class="caption center-align">
+          <h4 class="blue-text">Now chat with brands you use or like</h4>
+          <h5 class="red-text"></h5>
+        </div>
+      </li>
+      <li>
+        <img src="images/AppIntro/3.png"> <!-- random image -->
+        <div class="caption bottom center-align">
+        <h4 class="blue-text">Share your feeling with your sevice providers</h4>
+          <h5 class="red-text">banks, municipalities, schools etc.</h5>
+        </div>
+      </li>
+      <li>
+        <img src="images/AppIntro/4.png"> <!-- random image -->
+        <div class="caption center-align">
+          <h4 class="blue-text">Help them to serve you better by your feedbacks</h4>
+          <h5 class="red-text"></h5>
+        </div>
+      </li>
+      <li id="last_li">
+        <img src="images/AppIntro/5.png"> <!-- random image -->
+        <div class="caption center-align">
+          <h4 class="blue-text">lets linkup with LINKAPP</h4>
+          <h5 class="red-text"></h5>
+        </div>
+      </li>
+    </ul>
+  </div>
+    <a id="done" onClick="location.reload();" class="center waves-effect waves-light btn red">Get Started</a>
+ </div>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      var flag=false;
+      $('#loader_model').closeModal();
+      var height=$( window ).height();
+      $('.slider').slider({height: height});
+      setInterval(function(){ 
+        if(flag)
+          location.reload();
+        if($(".slides li.active").attr("id")=="last_li"){
+         flag=true;
+        }
+      }, 6500);
+    });
+  </script>

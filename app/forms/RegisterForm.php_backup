@@ -1,0 +1,156 @@
+<?php
+
+use Phalcon\Forms\Form;
+use Phalcon\Forms\Element\Text;
+use Phalcon\Forms\Element\Password;
+use Phalcon\Forms\Element\TextArea;
+use Phalcon\Validation\Validator\PresenceOf;
+use Phalcon\Validation\Validator\Email;
+use Phalcon\Validation\Validator\StringLength;
+
+class RegisterForm extends Form
+{
+
+    public function initialize($options = null)
+    {
+        // first_Name
+         $this->setEntity($this);
+
+        $first_name = new Text('first_name');
+        $first_name->setLabel('First Name');
+        $first_name->setFilters(array('striptags', 'string'));
+        $first_name->addValidators(array(
+            new PresenceOf(array(
+                'message' => 'First Name is required'
+            ))
+        ));
+        $this->add($first_name);
+
+         // Last_Name
+        $last_name = new Text('last_name');
+        $last_name->setLabel('Last Name');
+        $last_name->setFilters(array('striptags', 'string'));
+        $last_name->addValidators(array(
+            new PresenceOf(array(
+                'message' => 'Last Name is required'
+            ))
+        ));
+        $this->add($last_name);
+
+        // Name
+        $name = new Text('username');
+        $name->setLabel('Username');
+        $name->setFilters(array('alpha'));
+        $name->addValidators(array(
+            new PresenceOf(array(
+                'message' => 'Please enter your desired user name'
+            ))
+        ));
+        $this->add($name);
+
+        // Email
+        $email = new Text('email');
+        $email->setLabel('E-Mail');
+        $email->setFilters('email');
+        $email->addValidators(array(
+            new PresenceOf(array(
+                'message' => 'E-mail is required'
+            )),
+            new Email(array(
+                'message' => 'E-mail is not valid'
+            ))
+        ));
+        $this->add($email);
+
+        // Password
+        $password = new Password('password');
+        $password->setLabel('Password');
+        $password->addValidators(array(
+            new PresenceOf(array(
+                'message' => 'Password is required'
+            ))
+        ));
+        $this->add($password);
+
+        // Confirm Password
+        $repeatPassword = new Password('repeatPassword');
+        $repeatPassword->setLabel('Repeat Password');
+        $repeatPassword->addValidators(array(
+            new PresenceOf(array(
+                'message' => 'Confirmation password is required'
+            ))
+        ));
+        $this->add($repeatPassword);
+
+        // Mobile
+        $mobile = new Text('mobile');
+        $mobile->setLabel('Mobile Number');
+        $mobile->setFilters('int');
+        $mobile->addValidators(array(
+            new PresenceOf(array(
+                'message' => 'Mobile Number is required'
+            )),
+            
+        ));
+        $this->add($mobile);
+
+                // joint_handle
+        $joint_handle = new Text('joint_handle');
+        $joint_handle->setLabel('LinkApp id');
+        $joint_handle->addValidators(array(
+            new PresenceOf(array(
+                'message' => 'LinkApp id is required'
+            )),
+            
+        ));
+        $this->add($joint_handle);
+                // Mobile
+        $senderid = new Text('senderid');
+        $senderid->setLabel('Sender name');
+        $senderid->addValidators(array(
+            new PresenceOf(array(
+                'message' => 'Sender name is required'
+            )),
+            
+        ));
+        $this->add($senderid);
+
+        $address = new TextArea('address');
+        $address->setLabel('Address');
+        $this->add($address);
+
+        $pincode = new Text('pincode');
+        $pincode->setLabel('Pincode');
+        $this->add($pincode);
+
+        
+        $phone = new Text('phone');
+        $phone->setLabel('Phone');
+        $this->add($phone);
+
+        $state = new Text('state');
+        $state->setLabel('State');
+        $this->add($state);
+
+        $city = new Text('city');
+        $city->setLabel('City');
+        $this->add($city);
+        
+        $organization = new Text('organization');
+        $organization->setLabel('Organization');
+        $this->add($organization);
+
+        $dob = new Text('dob');
+        $dob->setLabel('DOB');
+        $this->add($dob);
+
+        $pincode = new Text('pincode');
+        $pincode->setLabel('Pin Code');
+        $this->add($pincode);
+
+        $details = new Text('details');
+        $details->setLabel('Details');
+        $this->add($details);
+
+    }
+}

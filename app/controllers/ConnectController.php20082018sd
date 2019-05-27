@@ -1,0 +1,49 @@
+<?php
+
+class ConnectController extends ControllerBasefront
+{
+    public function initialize()
+    {
+        $this->tag->setTitle('');
+        parent::initialize();
+        $this->view->setTemplateAfter('mainconnect');
+    }
+
+    public function indexAction()
+    {
+
+    }
+     public function supportAction()
+    {
+    	$this->view->form = new ContactForm;
+    }
+     public function featuresAction()
+    {
+
+    }
+     public function signinAction()
+    {
+        $auth=$this->session->get('auth');
+        if($auth)
+            return $this->response->redirect("dashboard"); 
+        $this->tag->setTitle('Sign In');
+        // $this->flashSession->error("Wrong Mobile/password");
+    }
+    public function signupAction($slab_id)
+    {
+        
+                //Get session info
+        if(!$slab_id){
+            $slab_zero = Slabs::findFirst("amount=0");
+            $slab_id=$slab_zero->id;
+            return $this->response->redirect("connect/signup/$slab_id");  
+        }
+        $auth = $this->session->get('auth');
+        if($auth)
+            return $this->response->redirect("dashboard"); 
+        $form = new RegisterForm;
+        $this->view->setVar("url_param",$slab_id); 
+        $this->view->form = $form;
+    }
+
+}

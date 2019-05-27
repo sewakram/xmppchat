@@ -1,0 +1,1212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>SancharApp</title>
+      <!--Let browser know website is optimized for mobile-->
+      <meta charset="utf-8" />
+      <!-- <meta http-equiv="Content-Security-Policy"/> -->
+      <meta name="format-detection" content="telephone=no" />
+      <meta name="msapplication-tap-highlight" content="no" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no,height=device-height"/>
+      <!--Import materialize.css-->
+      <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+
+      <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>      
+      <script type="text/javascript" src="js/materialize.min.js"></script>
+      <script type="text/javascript" src="js/index.js"></script>
+      <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+      <script type='application/javascript' src='js/fastclick.js'></script>
+      <script src='js/jquery.p2r.js' type='text/javascript' defer></script>
+      <script type="text/javascript" src="js/XMPP/strophe.min.js"></script>
+      <script type="text/javascript" src="js/linkify.js"></script>
+</head>
+
+<body>
+  <!-- Loader Model-->
+  <div id="loader_model" class="modal">
+  <div class="center center-align">
+   <div class="preloader-wrapper big active">
+    <div class="spinner-layer spinner-red-only">
+      <div class="circle-clipper left">
+        <div class="circle"></div>
+      </div><div class="gap-patch">
+        <div class="circle"></div>
+      </div><div class="circle-clipper right">
+        <div class="circle"></div>
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+
+<!-- END Loader -->
+<div id="homepage_Wrapper">
+  <div id="homepage">
+    <div class="navbar-fixed">
+      <nav>   
+        <div class="nav-wrapper">
+          <a href="#!" class="brand-logo">Logo</a>
+          <ul id="slide-out" class="side-nav">
+         <!--  <li><a class="modal-trigger" href="#broadcast_modal">Broadcast</a></li> -->
+          <li><a class="modal-trigger" href="#profile_modal"><i class="mdi-action-account-box left"></i>My Account</a></li>
+          <li><a onclick="update_status();" class="modal-trigger" href="#privacy_model"><i class="mdi-action-https left"></i>Privacy</a></li>
+         <!--  <li><a class="sync" href="#" onclick="contact_sync();"><i class="mdi-av-loop left"></i>Sync Contacts</a></li> -->
+<!--           <li><a class="modal-trigger" href="#feedback_model"><i class="mdi-image-edit left"></i>Contact us</a></li> -->
+           <li><a class="modal-trigger" href="#about_modal"><i class="mdi-social-people left"></i>About</a></li>
+          </ul>
+          <a href="#" data-activates="slide-out" class="button-collapse waves-effect waves-blue"><i class="mdi-navigation-menu"></i></a>
+          <a onClick="$('#search_modal #search_list').html('');$('#search_modal #search').val('');" id="right_menu" class="modal-trigger right waves-effect waves-blue" href="#search_modal"><i class="mdi-action-search"></i></a>
+   <!--       <span class="communication"><a onclick="$('#broadcast_modal input:checkbox').prop('checked',false);" class="modal-trigger" href="#broadcast_modal">
+         <i class="right mdi-communication-messenger small"></i></a></span> -->
+        </div>
+      </nav>
+  </div>
+  <!-- View port -->
+   <div id="viewport">
+      <div id="touchloader">               
+        <div class="progress">
+            <div id="pre" class="determinate" style="width:0%;"></div>
+            <div id="post" class="indeterminate" style="display:none;"></div>
+        </div>
+      </div>
+     <div id="list">    
+        <ul class="collection p2r-scroll" id="inbox_list">
+          
+        </ul>
+     </div>
+     <div class="hide" id="disconnect"><span class="left">Disconnected</span><a onclick="refresh();" class="white-text waves-effect waves-light right"><span class="mdi-av-loop"></span>  RETRY</a></div> 
+   </div>
+  <!-- End View port -->
+ 
+  <!-- Message Modal Structure -->
+  <div id="msg_model" data-id="null" class="modal modal-fixed-footer">
+    <div id="first_header" class="header fixed">
+      <span onclick="$('#msg_model').closeModal();" class="modal-close waves-effect waves-light"><i class="mdi-navigation-arrow-back"></i>
+      <img src="" alt="" class="circle dp"> </span>
+      <span class="title"></span>
+      <div class="upload_files" id="upload_files" onclick="upload_send();">
+        <img src="./images/attachment24dp.png" alt="">
+      </div>
+    </div>
+    <div id="options" class="header fixed">
+      <span onclick="option_Close();" class="options-close waves-effect waves-light"><i class="mdi-navigation-arrow-back"></i>
+      <span class="count">1</span><span class="txt"> selected</span>
+      </span>
+      <div class="right">
+        <!-- <a id="replybtn" onclick="reply();" class="waves-effect waves-light mdi-content-reply" href="#"></a> -->
+       <a id="selectAllbtn" onclick="selectAll(this);" data-state="true" class="waves-effect waves-light" href="#"><span class="mdi-action-done-all"></span> all</a>
+        <a id="dltbtn" onclick="confirm_delete();" class="waves-effect waves-light mdi-action-delete" href="#"></a>
+        <a id="copybtn" onclick="copy_record();" class="waves-effect waves-light mdi-content-content-copy" href="#"></a>
+        <a id="sharebtn" onclick="share_record();" class="waves-effect waves-light mdi-social-share" href="#"></a>
+      </div>
+    </div>
+          <ul class="modal-content">
+      
+          </ul>
+   <div class="modal-footer center">
+    <textarea id="msg_text" type="text" placeholder="Type a message" class="left text-area"></textarea>
+    <a onclick="msg_send('msg_model');" class="btn-floating btn-small waves-effect waves-light right"><i class="mdi-content-send"></i></a>
+    </div>
+  </div>
+<!-- Message Modal Structure End-->
+<!--Notifications modal Start -->
+
+<div id="privacy_model" class="modal">
+    <div class="header fixed">
+    <span class="modal-close waves-effect waves-light"><i class="mdi-navigation-arrow-back"></i>
+    <span class="title">Privacy</span> </span>
+    </div>
+    <div class="collection">
+      <a href="#!" class="collection-item">
+        <span class="text">Notifications</span>
+          <div class="switch right">
+            <label>
+              <span class="block"><i class="mdi-social-notifications-off"></i></span>
+              <input id="chkbox" type="checkbox">
+              <span class="lever"></span>
+               <span class="allow"><i class="mdi-social-notifications-on"></i></span>
+            </label>
+          </div>
+      </a>
+        <a class="modal-trigger collection-item waves-effect waves-blue blocklist" href="#blocklist_modal">Block List<span class="badge red-text"></span></a>
+      </div>
+            
+</div>
+<!--Notifications modal End -->
+
+<!--Feedback modal Start -->
+<div id="feedback_model" class="modal">
+    <div class="header fixed">
+    <span class="modal-close waves-effect waves-light"><i class="mdi-navigation-arrow-back"></i>
+    <span class="title">Contact us</span> </span>
+    </div>
+    <div class="modal-content">
+      <div class="row">
+        <div class="input-field col s12">
+        <input type="text" id="subject" name="subject">
+        <label for="subject">Subject:</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s12">
+        <!-- <i class="mdi-editor-mode-edit prefix"></i> -->
+        <textarea id="message" name="message" class="materialize-textarea" ></textarea>
+        <label for="message">Message:</label>
+        </div>
+      </div>
+      <div class="row center-align">
+      <button class="btn btn_blue waves-effect waves-light" type="button" id="send">
+          <i class="mdi-content-send right"></i>
+          Send
+      </button>          
+    </div>
+    </div>
+</div>
+<!--Feedback modal End -->
+
+<!-- Broadcast Modal Start -->
+
+<div id="broadcast_modal" class="modal modal-fixed-footer">
+    <div class="header fixed">
+    <span class="modal-close waves-effect waves-light"><i class="mdi-navigation-arrow-back"></i>
+    <span class="title">New message <!-- Select recipients --></span> 
+    </span>
+     <a class="done" href="#" onclick="broadcast_submit();"><i class="mdi-action-done right-align">Done</i></a>
+    </div>
+  <ul class="modal-content collection" id="contact_list">
+ <!--    <li class="collection-header"><h4>Select recipients</h4></li> -->
+  </ul>
+</div>
+<!-- Block List Model Modal Start -->
+
+<div id="blocklist_modal" class="modal">
+    <div class="header fixed">
+    <span class="modal-close waves-effect waves-light"><i class="mdi-navigation-arrow-back"></i>
+    <span class="title">Blocked contacts</span> 
+    </span>
+ <!--     <a href="#" class="btn-floating waves-effect waves-light right"><i class="mdi-social-person-add"></i></a> -->
+    </div>
+    <ul class="collection" id="blockcontact_list">
+    </ul>
+</div>
+<!-- End Block List Model -->
+<!-- Search  Model Modal Start -->
+
+<div id="search_modal" class="modal">
+    <div class="header fixed">
+    <span class="modal-close waves-effect waves-light"><i class="mdi-navigation-arrow-back"></i>
+    <span class="title"></span> 
+    </span>
+    <div id="search_wrapper" class="input-field">
+          <input id="search" type="search" onkeyup="companyUsers(this.value)" required>
+          <label for="search"><i class="mdi-action-search"></i></label>
+          <i id="close_btn" class="mdi-navigation-close"></i>
+    </div>
+    </div>
+    <div class="modal-content">
+     <ul class="collection with-header" id="search_list">
+      </ul>
+    </div>
+</div>
+<!-- End Search  Model -->
+<!-- send message Modal Start -->
+
+<!-- <div id="send_message_modal" class="modal modal-fixed-footer">
+    <div class="header fixed">
+    <span class="modal-close waves-effect waves-light"><i class="mdi-navigation-arrow-back"></i>
+    <span class="title">Send Message</span> </span>
+    </div>
+   <ul class="modal-content collection" id="contact_list">
+    <span>You have selected <b><span class="blue-text" id="count"></span></b> recipient(s)</span>
+  </ul>
+  <div class="modal-footer">
+        <span onclick="msg_send('send_message_modal');$('#broadcast_modal').closeModal();" id="sendbtn" class="btn_blue btn-floating btn-small waves-effect waves-light right modal-close"><i class="mdi-content-send"></i>
+        </span>
+        <textarea id="msg_text" type="text" placeholder="Type a message" class="left text-area"></textarea>
+  </div>
+</div> -->
+<!-- option_modal Start -->
+<div id="option_model" class="modal modal-fixed-footer">
+        <div class="collection">
+        </div>
+</div>
+ <!-- option_modal Modal End -->
+
+   <!-- Modal Structure -->
+  <div id="confirm_model" class="modal">
+    <div class="">
+    <div class="modal-content container">
+      <h4>Delete Messages?</h4>
+    </div>
+    <div class="footer center">
+     <a id="dltbtn" class="waves-effect waves-blue btn-flat modal-close" href="#">Delete</a>
+     <a id="cacel_btn" class="waves-effect waves-blue btn-flat" onclick="$('#confirm_model').closeModal();" href='#'>Cancel</a>
+    </div>
+  </div>
+</div>
+<!-- confirm feedback model -->
+  <div id="confirm_feed_model" class="modal">
+    <div class="">
+    <div class="modal-content container">
+      <h4>Confirmation <br><p><h6>Once submitted can't be edited later</h6></p></h4>
+    </div>
+    <div class="footer center">
+     <a id="dltbtn" class="waves-effect waves-blue btn-flat" href="#">Submit</a>
+     <a id="cacel_btn" class="modal-close waves-effect waves-blue btn-flat" href='#'>Cancel</a>
+    </div>
+  </div>
+</div>
+<!-- end confirm feedback model -->
+<!-- confirm spam model -->
+  <div id="confirm_spam_model" class="modal">
+    <div class="">
+    <div class="modal-content container">
+      <h4 class="red-text">Why you think it's spam?</h4>
+      <div class="input-field">
+          <textarea placeholder="optional" length="120" id="reasonTextarea" class="blue-text materialize-textarea"></textarea>
+      </div>
+    </div>
+    <div class="footer center">
+     <a id="dltbtn" class="waves-effect waves-blue btn-flat" href="#">Ok</a>
+     <a id="cacel_btn" class="modal-close waves-effect waves-blue btn-flat" href='#'>Cancel</a>
+    </div>
+  </div>
+</div>
+<!-- end confirm spam model -->
+ <!-- photo card -->
+  <div id="photoCard_model" class="modal modal-fixed-footer">
+    <div class="header fixed black">
+    <span class="modal-close waves-effect waves-light"><i class="mdi-navigation-arrow-back"></i>
+    <span class="title">Back</span> 
+    </span>
+    </div>
+      <div class="modal-footer center black">
+        <div class="frame">
+            <span class="helper"></span><img src="images/yuna.jpg">   
+        </div>
+        <!-- <div class="card-action center">
+              <p class="range-field"><input type="range" class="zoom-range" min="0.4" max="5" step="0.05"/> </p>
+        </div> -->
+      </div>
+  </div>
+<!--photo card-->
+<!-- Abou us Model Modal Start -->
+
+<div id="about_modal" class="modal">
+    <div class="header fixed">
+    <span class="modal-close waves-effect waves-light"><i class="mdi-navigation-arrow-back"></i>
+    <span class="title">About</span> 
+    </span>
+ <!--     <a href="#" class="btn-floating waves-effect waves-light right"><i class="mdi-social-person-add"></i></a> -->
+    </div>
+    <ul class="collection">
+        <li class="collection-item"><strong>SancharApp&trade; Version (<span class="version"></span>)</strong></li>
+        <li class="collection-item"><strong>SancharApp&trade;</strong> is a tool through which you can communicate to thousands of mobile users in a single shot at just a click,  your messages gets delivered to link app user or in user inbox automatically.</li>
+        <li class="collection-item"><strong>SancharApp&trade;</strong> allows to communicate with different groups and also provide solution for receiving feedback from individual.</li>
+        <li class="collection-item"><strong>Contact Us</strong>
+        <br>178, Giripeth, 
+        <br>J.B. Thakkar Marg, Nagpur.
+        <br>440010.
+        <br>Mob No:+91 8087658126
+        <br>Off:   +91 712 6417178
+        </li>
+    </ul>
+</div>
+<!-- End Abou us Model -->
+<!-- About us Model Modal Start -->
+
+<div id="image_modal" class="modal modal-fixed-footer">
+      <div class="header fixed">
+    <span class="modal-close waves-effect waves-light"><i class="mdi-navigation-arrow-back"></i>
+    <span class="title">Upload Profile Image</span> 
+    </span>
+    </div>
+    <div class="modal-content">
+        <img class="responsive-img" id="new_upload_image" src="">
+        <div id="slide-profile">
+          <div id="demoupload"></div>
+          <input class="hide" type="file" name="fileupload" id="upload" value="Choose a file" accept="image/*">
+          <form action="#" id="myform" method="post">
+              <input type="hidden" id="imagebase64" name="imagebase64">
+          </form>
+        </div>
+    </div>
+   <div class="modal-footer">
+      <a href="#!" onclick="upload();" class="waves-effect waves-light btn left">Upload</a>
+      <a href="#!" class="modal-action modal-close waves-effect waves-light btn right">Cancel</a>
+   </div>
+</div>
+
+<div id="image_modal_send" class="modal modal-fixed-footer">
+    <div class="header fixed">
+  <span class="modal-close waves-effect waves-light"><i class="mdi-navigation-arrow-back"></i>
+  <span class="title">Upload Profile Image</span> 
+  </span>
+  </div>
+  <div class="modal-content">
+      <img class="responsive-img" id="upload_image_modal_send_new_upload_image" src="">
+      <div id="upload_image_modal_send_slide-profile">
+        <div id="image_modal_send_demoupload"></div>
+        <input class="hide" type="file" name="fileupload" id="image_modal_send_upload" value="Choose a file" accept="image/*">
+        <form action="#" id="upload_image_modal_send_myform" method="post">
+            <input type="hidden" id="image_modal_send_imagebase64" name="image_modal_send_imagebase64">
+        </form>
+      </div>
+  </div>
+ <div class="modal-footer">
+    <a href="#!" onclick="upload_image_modal_send();" class="waves-effect waves-light btn left">Upload</a>
+    <a href="#!" class="modal-action modal-close waves-effect waves-light btn right">Cancel</a>
+ </div>
+</div>
+
+<!-- END Database Updating Model -->
+  <div id="alert_model" class="modal">
+    <div class="">
+    <div class="modal-content container">
+      <h4 class="red-text">SancharApp</h4>
+      <div class="server-message"></div>
+    </div>
+    <div class="footer center">
+     <a id="cacel_btn" class="modal-close waves-effect waves-blue btn-flat" href='#'>Cancel</a>
+    </div>
+  </div>
+</div>
+<!-- end confirm spam model -->
+<div id="profile_modal" class="modal modal-fixed-footer">
+    <div class="header fixed">
+    <span class="modal-close waves-effect waves-light"><i class="mdi-navigation-arrow-back"></i>
+    <span class="title">My Account</span> 
+    </span>
+ <!--     <a href="#" class="btn-floating waves-effect waves-light right"><i class="mdi-social-person-add"></i></a> -->
+    </div>
+    <div class="modal-content">
+    <div class="collection">
+      <div class="row collection-item" id="profile-img">
+            <p onclick="getPhoto();" class="waves-effect">
+            <img class="responsive-img" src="images/default_prof.png" id="default-img">
+            <a class="mdi-image-control-point waves-effect"></a>
+            </p>
+      </div>
+      <div class="row collection-item">
+        <div class="input-field col s12">
+          <input id="name" type="text">
+          <label for="name">Name</label>
+        </div>
+      </div>
+      <div class="row collection-item">
+        <div class="input-field col s12">
+          <input id="mobile" type="tel">
+          <label for="mobile">Mobile</label>
+        </div>
+      </div>
+      <div class="row collection-item">
+        <div class="input-field col s12">
+          <input id="pincode_home" type="tel" length="6" maxlength="6">
+          <label for="pincode_home">Pincode (Home)</label>
+        </div>
+      </div>
+      <div class="row collection-item">
+        <div class="input-field col s12">
+          <input id="pincode_work" type="tel" length="6" maxlength="6">
+          <label for="pincode_work">Pincode (Work)</label>
+        </div>
+      </div>
+      <div class="row collection-item">
+        <div class="input-field col s12">
+          <input id="dob" type="date" class="datepicker">
+          <label for="dob">DOB</label>
+        </div>
+      </div>
+      <div class="row collection-item">
+        <div class="input-field col s12">
+          <input id="doa" type="date" class="datepicker">
+          <label  for="doa">Date of Anniversary</label>
+        </div>
+      </div>
+      <div class="row collection-item occupation">
+        <div class="input-field col s12">
+           <select id="occupation">
+            <option value="" disabled selected>select occupation</option>
+            <option value="Student">Student</option>
+            <option value="Homemaker">Homemaker</option>
+            <option value="Retired">Retired</option>
+            <option value="Not Employed">Not Employed</option>
+            <option value="Clerical">Clerical</option>
+            <option value="Management">Management</option>
+            <option value="Professional">Professional</option>
+            <option value="Sales">Sales</option>
+            <option value="Service Staff">Service Staff</option>
+            <option value="Other">Other</option>
+          </select>
+          <label>Occupation</label>
+        </div>
+      </div>
+      <div class="row collection-item gender">
+        <div class="input-field col s12">
+        <p>
+          <input name="gender" type="radio" id="male" value="male" />
+          <label for="male">Male</label>
+          <input name="gender" type="radio" id="female" value="female" />
+          <label for="female">Female</label>
+        </p>
+          <label >Gender</label>
+        </div>
+      </div>
+      <div class="row collection-item">
+      <div id="submit_btn_row">
+        <a onclick="editProfile();" class="waves-effect waves-light btn left">Update</a>
+        <a class="modal-close waves-effect waves-light btn right">Cancel</a>
+      </div>
+      </div>
+      </div>
+      </div>
+</div>
+</div><!-- end homepage -->
+</div><!-- End Homepage_wrapper-->
+<script type="text/javascript">
+$('.button-collapse').sideNav({
+            menuWidth: 240,
+            edge: 'left',
+            closeOnClick: true
+    });
+$('.modal-trigger').leanModal();
+$('#loader_model').openModal({dismissible: false,opacity: .3});
+
+document.addEventListener('deviceready', onDeviceReady,false);
+
+var mobile_val = [];
+/* $(document).ready(function(){*/
+
+ /****************************************tap hold event*********************************/
+    function getEventTarget(e) {
+        e = e || window.event;
+        return e.target || e.srcElement; 
+    }
+    var longpress = 400,start,timer;
+    // holds the start time
+    //----------Start main message list Function---------------------
+    $( "ul#inbox_list").on('touchstart', function( e ) {
+        start = new Date().getTime();
+        timer = setTimeout(function(){
+            target=getEventTarget(e);
+            var id = $(target).closest("li").attr('id');
+            if ( new Date().getTime() >= ( start + longpress )  ) {
+               if(start + longpress>longpress)
+                  option_model(id);
+            }
+        },longpress);
+    });
+
+    $( "ul#inbox_list" ).on('touchmove', function( e ) {
+        start = 0;
+        clearTimeout(timer);
+    });
+    $( "ul#inbox_list" ).on('touchend touchcancel', function( e ) {
+        $('#touchloader #pre').attr('style','width:0%;');
+        clearTimeout(timer);
+        target=getEventTarget(e);
+        //check for display image click if so stop current event and open lightbox also check long pres event on image
+        if(target.id == "dp" && $('#option_model').is(':visible')==false){
+          var src=$(target).attr('src');
+          var title=$(target).next('.title').text();
+          //$('#photoCard_model span.title').html(title);
+          //lightBox(src);
+          showDp(src);
+          return false;
+        }
+        //end lightbox call function
+        var id = $(target).closest("li").attr('id');
+        if ( new Date().getTime() < ( start + longpress )  )
+          single_Popup(id); 
+    });
+
+    // ganesh searchCompanyUser send msg
+    $(document).on('click touch','#search_list li.searchCompanyUser', function( e ) {
+        // $('#touchloader #pre').attr('style','width:0%;');
+        // clearTimeout(timer);
+        // target=getEventTarget(e);
+        // //check for display image click if so stop current event and open lightbox also check long pres event on image
+        // if(target.id == "dp" && $('#option_model').is(':visible')==false){
+        //   var src=$(target).attr('src');
+        //   var title=$(target).next('.title').text();
+        //   //$('#photoCard_model span.title').html(title);
+        //   //lightBox(src);
+        //   showDp(src);
+        //   return false;
+        // }
+        //end lightbox call function
+        var id = $(this).attr('id');
+        console.log('target id:',id);
+        if(lookup[''+id+'']==undefined){
+        // var val= JSON.parse($(this).data('info'));
+        var val= $(this).data('info');
+        console.log('val: ',val);
+        db.transaction(function(tx) {
+                            tx.executeSql("INSERT into groups (id,displayName,is_verified,is_blocked,photo) values ('"+val['mobile']+"','"+val['name']+"','false','false','"+val['mobile']+".jpg')",[],insertSuccess(val['mobile']),insertFail);
+                            lookup[val['mobile']] ={displayName:val['name'],is_verified:'false'};
+        });
+                          }else{
+                            single_search_Popup(id);
+                          }
+        // if ( new Date().getTime() < ( start + longpress )  )
+        // single_search_Popup(id); // view all msg
+    });
+    function insertSuccess(mobile) {
+    console.log('insert success: ',mobile);
+    single_search_Popup(mobile);
+}
+
+function insertFail(err) {
+    console.log('insertFail, err.message: ' + err.message);
+}
+    //----------End main message list Function---------------------
+    //------for single chat messages----------------------------------
+    $( "#msg_model ul.modal-content").on('touchstart', function( e ) {
+        start = new Date().getTime();
+        timer = setTimeout(function(){
+        target=getEventTarget(e);
+        var id = $(target).closest("li").attr('id');
+        if ( new Date().getTime() >= ( start + longpress )  ) {
+           if(start + longpress>longpress)
+              confirm_single_model(id);
+        }
+        },longpress);
+    } );
+
+    $( "#msg_model ul.modal-content" ).on('touchmove', function( e ) {
+        start = 0;
+        clearTimeout(timer);
+    } );
+
+    $( "#msg_model ul.modal-content").on('touchend touchcancel', function( e ) {
+        clearTimeout(timer);
+    } );
+   //------End for single messages----------------------------------
+  /****************************************End tap hold event******************************/
+
+/* });//end document ready*/
+
+function showResult(str) {
+  if(showResult_timer) clearTimeout(showResult_timer);
+  if (str.length==0) {
+    return;
+  }
+  showResult_timer = setTimeout(function(){
+      // Cancel the last request if valid
+      if(showResult_XHR) showResult_XHR.abort();
+      $('#loader_model').openModal({dismissible: false,opacity: .3});
+        showResult_XHR = $.ajax({
+        url: siteurl+"/api/jointsearch",
+        data:'keyword='+str+'&subscriber_id='+subscriber_id,
+        success:function(response){
+         // console.log(response);
+         $("#search_modal #search_list").html("");
+          var count=response.length;
+          //console.log(count);
+          var html='<li class="collection-header"><h6>search result ('+count+') for "'+str+'"</h6></li>';
+          if(count){
+              for (var i = 0; i < count; i++) {
+                if(response[i]['status']==false){
+                  html+= '<li class="avatar collection-item"><img src="'+getDetails(response[i]['data']['mg_id'],"photo")+'" alt="" class="circle"><span class="title">'+response[i]['data']['senderID']+'</span> <p>'+response[i]['data']['joint_handle']+'</p><a onClick="follow(this,'+response[i]['data']['mg_id']+')" href="#!" class="follow joint waves-effect secondary-content"></a></li>';
+                }
+                else{
+                    html+= '<li class="avatar collection-item"><img src="'+getDetails(response[i]['data']['mg_id'],"photo")+'" alt="" class="circle"><span class="title">'+response[i]['data']['senderID']+'</span> <p>'+response[i]['data']['joint_handle']+'</p><a onClick="unfollow(this,'+response[i]['data']['mg_id']+')" href="#!" class="unfollow joint waves-effect secondary-content"></a></li>';
+                }
+              };
+          }
+          $("#search_modal #search_list").html(html);
+          /*code to fetch data from local db app*/
+            db.transaction(function(tx) {
+              tx.executeSql("select id,displayName from groups where displayName LIKE '%"+str+"%' ",[],function(tx,results){
+                    var count=results.rows.length;
+                    var li='';
+                    for(var i=0; i<count; i++) {
+                      var id=results.rows.item(i).id;
+                      var displayName=results.rows.item(i).displayName;
+                      li+= '<li class="avatar collection-item"><img src="'+getDetails(id,"photo")+'" alt="" class="circle"><span class="title">'+displayName+'</span><a onClick="single_Popup(&#39;'+id.trim()+'&#39;)" href="#!" class="waves-effect btn secondary-content"><i class="mdi-action-launch"></i></a></li>';
+                       
+                    }//end loop
+                    $("#search_modal #search_list").append(li);
+                    //console.log(lookup);
+              } ,errorCB);
+             },errorCB,successHandler);
+            /*End code to fetch data from local db app*/
+          $('#loader_model').closeModal();
+        }
+      });
+  }, 500);// wait for quarter second.    
+}
+function follow(this_ref,mg_id){
+  $('#loader_model').openModal({dismissible: false,opacity: .3});
+  setTimeout(function(){
+  $.ajax({
+      url: siteurl+"/api/jointfollow",
+      data:'subscriber_id='+subscriber_id+'&mg_id='+mg_id,
+      success:  function(response){
+              if(response['status']){
+                  //$(this_ref).find('i').toggleClass("mdi-content-remove-circle mdi-content-add-circle");
+                  $(this_ref).toggleClass("follow unfollow");
+                  $(this_ref).attr('onclick','unfollow(this,'+mg_id+')');
+                  //this_ref).find('#function_title').text('Unfollow ');
+              }else{
+                  Materialize.toast(response['messages'], 4000); // 4000 is the duration of the toast               
+              }
+              $('#loader_model').closeModal();
+      }
+  });
+  }, 250);// wait for quarter second.    
+}
+function unfollow(this_ref,mg_id){
+ $('#loader_model').openModal({dismissible: false,opacity: .3});
+   setTimeout(function(){
+  $.ajax({
+      url: siteurl+"/api/jointunfollow",
+      data:'subscriber_id='+subscriber_id+'&mg_id='+mg_id,
+      success:  function(response){
+              if(response['status']){
+                  //$(this_ref).find('i').toggleClass("mdi-content-remove-circle mdi-content-add-circle");
+                  $(this_ref).toggleClass("follow unfollow");
+                  $(this_ref).attr('onclick','follow(this,'+mg_id+')');
+                  //$(this_ref).find('#function_title').text('Follow ');
+              }else{
+                  Materialize.toast(response['messages'], 4000); // 4000 is the duration of the toast               
+              }
+              $('#loader_model').closeModal();
+      }
+  });
+   }, 250);// wait for quarter second.    
+}
+//old code to upload profile
+/*function upload() {
+          $('#loader_model').openModal({dismissible: false,opacity: .3});
+          var img = $('img#new_upload_image');
+          var imageURI = img.attr("src");
+          $("#image_modal").closeModal();
+          try{
+          var options = new FileUploadOptions();
+          options.fileKey = "file";
+          options.fileName = imageURI.substr(imageURI.lastIndexOf('/') + 1);
+          options.mimeType = "image/jpeg";
+          var params = new Object();
+          options.params = params;
+          options.chunkedMode = false;
+          var ft = new FileTransfer();
+          ft.upload(imageURI,encodeURI(siteurl+"/api/uploadprofile?subscriber_id="+subscriber_id), win, fail,
+              options); 
+        }catch(err){
+          console.log(err);
+        }
+          
+}
+       
+function win(r) {
+  var imageURI=decodeURI(r.response.trim().slice(1, -1));
+  var largeImage= $('#profile-img img#default-img');
+  largeImage.attr("src",imageURI);
+  var user_details=JSON.parse(localStorage.getItem("user_details"));
+  user_details['profile_image']= imageURI;
+  localStorage.setItem("user_details", JSON.stringify(user_details));
+  $('#loader_model').closeModal();
+  Materialize.toast("Successfully uploaded", 2000);
+  console.log("Code = " + r.responseCode);
+  console.log("Response = " + r.response);
+  console.log("Sent = " + r.bytesSent);
+}
+function fail(error) {
+  $('#loader_model').closeModal();
+  Materialize.toast("Failed to upload", 2000);
+  alert("An error has occurred: Code = " + error.code);
+  alert("upload error source " + error.source);
+  alert("upload error target " + error.target);
+}
+function getPhoto() { 
+  try{
+      pictureSource=navigator.camera.PictureSourceType;
+      destinationType=navigator.camera.DestinationType;
+      // Retrieve image file location from specified source
+      navigator.camera.getPicture(onPhotoURISuccess, onFail, { quality: 50, 
+      destinationType: destinationType.FILE_URI,
+      sourceType: pictureSource.PHOTOLIBRARY });
+    }
+    catch(err){
+        alert(err.message);
+        $("#image_modal").openModal();
+    }
+}
+function onPhotoURISuccess(imageURI) {
+  $("#image_modal").openModal();
+//alert('onPhotoURISuccess: ' + imageURI);
+  //var largeImage = $('img#default-img');
+  var largeImage= $('#image_modal img');
+  largeImage.show();
+  largeImage.attr("src",imageURI);
+}
+function onFail(message) {
+  alert('Failed because: '+JSON.stringify(message));
+}*/
+//end
+function editProfile(){
+        var subscriber_id=loc_Storage.getItem("subscriber_id");
+        var pincode_home=$('#profile_modal input#pincode_home').val();
+        var pincode_work=$('#profile_modal input#pincode_work').val();
+        var dob=$('#profile_modal #dob').val();
+        var doa=$('#profile_modal #doa').val();
+        var $input = $('#profile_modal #dob').pickadate();
+        var picker_dob = $input.pickadate('picker');
+        var dob=picker_dob.get('select', 'yyyy/mm/dd');
+        var $input = $('#profile_modal #doa').pickadate();
+        var picker_doa = $input.pickadate('picker');
+        var doa=picker_doa.get('select', 'yyyy/mm/dd');
+
+        var gender=$('#profile_modal input[name=gender]:checked').val();
+        var occupation=$('#profile_modal #occupation').val();
+        var name=$('#profile_modal #name').val();
+        if(pincode_home ==''|| pincode_home.match(/^[0-9]+$/) == null||pincode_home.length!=6){
+             $('#profile_modal input#pincode_home').addClass("invalid");
+             return;
+        }
+        if(pincode_work !=''){
+          if(pincode_work.match(/^[0-9]+$/) == null||pincode_work.length!=6){
+               $('#profile_modal input#pincode_work').addClass("invalid");
+               return;
+          }
+          if(pincode_work==pincode_home){
+               $('#profile_modal input#pincode_work').addClass("invalid");
+               Materialize.toast("Pincode Home and Work cant be same", 4000);
+               return;
+          }
+        }
+       $('#loader_model').openModal({dismissible: false,opacity: .3});
+  setTimeout(function(){
+        var param="subscriber_id="+subscriber_id+"&pincode_home="+pincode_home+"&pincode_work="+pincode_work+"&dob="+dob+"&doa="+doa+"&gender="+gender+"&occupation="+occupation+"&name="+name;
+         
+        $.ajax({
+            url: siteurl+"/api/subscriber/edit",
+            data:param,
+            success:function(response){
+               $('#loader_model').closeModal();
+                if(response['status']=='true'){
+                   loc_Storage.setItem("pincode_home",pincode_home);
+                   loc_Storage.setItem("pincode_work",pincode_work);
+                   var user_details=JSON.parse(localStorage.getItem("user_details"));
+                   var profile_image='';
+                   if(user_details){
+                      profile_image=user_details['profile_image'];
+                   }
+                   loc_Storage.setItem("user_details",JSON.stringify({name:name,gender:gender,dob:dob,doa:doa,occupation:occupation,profile_image:profile_image}));
+                   renderMyAccount();
+                   Materialize.toast('Updated Successfully', 4000);//alert_msg('Successfully registered');
+                }else{
+                   Materialize.toast(response['messages'], 4000);//alert_msg('Registration Failed');
+                }
+            }
+            
+            });
+    }, 1000); 
+    }; 
+function confirm_single_model(id){
+  if(!$('#msg_model #options').is(':visible')){
+    vibrate(100);
+    $('.checkbox_align').css('display','inline-block');
+    var selecter=$('#msg_model ul.modal-content li#'+id+'');
+    selecter.find(':checkbox').prop('checked', true);
+    $('#msg_model #options').show();
+    $('#msg_model #first_header').hide();
+    selectMsg_arr[0]=id;
+  }
+ }
+ function option_Close(){
+  $('#msg_model #options').hide();
+  $('#msg_model #first_header').show();
+  $('.checkbox_align').css('display','none'); 
+  //$('#msg_model :checkbox:checked').removeAttr('checked');
+  $('#msg_model :checkbox:checked').prop('checked',false);
+  selectMsg_arr.length = 0;
+  $('#msg_model .count').html('1');
+ }
+function update_SelectMsgcount(elem){
+   selectMsg_arr.length = 0;
+   $('#msg_model :checkbox:checked').each(function(i){
+        selectMsg_arr[i] = $(this).val();
+   });
+   if(selectMsg_arr.length==0){
+     option_Close();
+     return;
+   }
+   $('#msg_model .count').html(selectMsg_arr.length);
+}
+function copy_record(){
+  var text='';
+    for(i = 0; i < selectMsg_arr.length; i++) {
+      var id=selectMsg_arr[i];
+      var selecter=$('#msg_model ul.modal-content li#'+id+''); 
+      text+='\n'+selecter.find('span.sender-masg').text();
+    }
+    //log(text.trim());
+     clipboard.copy(text.trim());
+     option_Close();
+}
+function share_record(){
+  var text='';
+  var img_array = []; 
+    for(i = 0; i < selectMsg_arr.length; i++) {
+      var id=selectMsg_arr[i];
+      var selecter=$('#msg_model ul.modal-content li#'+id+''); 
+      var temp_text=selecter.find('span.sender-masg').html();
+      if(($(temp_text).find('img:first').length) > 0)
+        img_array.push($(temp_text).find('img:first').attr('src'));
+
+      text+='\n'+temp_text;
+    }
+    var subject="sancharapp";
+    text=text.trim();
+    if(img_array.length > 0)
+      window.plugins.socialsharing.share($(text).text(),subject, img_array);
+    else
+      window.plugins.socialsharing.share($(text).text(),subject);
+}
+function selectAll(e){
+  var state = $(e).data('state');
+  $('#msg_model input:checkbox').prop('checked',state);
+  update_SelectMsgcount();
+  state=state==true? false : true;
+  $(e).data('state',state);  
+}
+function confirm_delete(){
+  $('#confirm_model a#dltbtn').attr('onclick','delete_record()');
+  $('#confirm_model').openModal();
+ }
+function delete_record(){
+    var id_str=selectMsg_arr.join(',');
+    
+    db.transaction(function(tx) {
+      tx.executeSql("delete from message where id IN("+id_str+")");
+    },errorCB,
+      function(){
+        for(i = 0; i < selectMsg_arr.length; i++) {
+          var id=selectMsg_arr[i];
+          $('#msg_model ul.modal-content li#'+id+'').slideDown("slow", function() {
+          if($(this).is($('#msg_model ul.modal-content li').last())){
+             li=$( "#msg_model ul.modal-content li:nth-last-child(2)");
+             var group_id=$('#msg_model').attr('data-id');
+             var desc=li.find('span.sender-masg').html();
+                  if(($(desc).find('img:first').length) > 0)
+                    desc = 'Image';
+                  else
+                    desc =($($.parseHTML(desc)).text()).substr(0,80);
+                  
+             var display_date=li.find('span.sender-time').text();
+             var read_class='';
+             
+             if(li.find('span.read_status'))
+                read_class=li.find('span.read_status i').attr('class');  
+
+             var inbox_li = $('ul#inbox_list li.'+group_id+'');//
+                 inbox_li.find('p.msg-text').html(desc);
+                 inbox_li.find('p.secondary-content').html(display_date+' <i class="'+read_class+'"></i> ');
+          
+          }
+          $(this).remove(); 
+          }); 
+        }//end for
+        option_Close();   
+      });//db function
+}
+$('#chkbox').click(function(){
+  var status = $('#chkbox').prop('checked');
+  if(status==true)
+      status='Yes';
+  else
+      status='No';
+            //comment this if you send request server this code disable notification locally
+  loc_Storage.setItem("notification_status", status);
+  update_status();
+  intializePush();
+
+               /*$('#loader_model').openModal({dismissible: false,opacity: .3});
+  setTimeout(function(){
+            var status = $('#chkbox').prop('checked');
+            if(status==true)
+              status='Yes';
+            else
+              status='No';
+
+            var param="status="+status+"&subscriber_id="+subscriber_id;
+            $.ajax({
+                    url: siteurl+"/api/update_NotificationStatus",
+                    data:param,
+                    success:  function(response){
+                      $('#loader_model').closeModal();
+                      if(response['status']=='success'){
+                        loc_Storage.setItem("notification_status", status);
+                        update_status();
+                        toastDestroy();
+                        Materialize.toast('Setting Updated!', 4000); // 4000 is the duration of the toast    
+                      }else{ 
+                        update_status(); 
+                        toastDestroy();
+                        Materialize.toast('Setting Failed to Update', 4000);
+                      }
+                    },
+                    error:function(){
+                      log('firing');
+                    }
+                        
+            }); 
+    }, 1000);   */
+});
+function update_status(){
+    var notification_status=loc_Storage.getItem("notification_status");
+    if(notification_status=='No')
+        $('#privacy_model input#chkbox').prop('checked', false);
+    else
+        $('#privacy_model input#chkbox').prop('checked', true);  
+}
+function msg_send(div_id){
+    var message =$.trim($('#'+div_id+' #msg_text').val());
+    console.log('sendig message: ',message);
+    if(message!=''){
+      console.log('mobile_val: ',mobile_val);
+      for  (i = 0; i < mobile_val.length; i++) {
+        var to=mobile_val[i];
+        var sender_id=getDetails(to,"displayName");
+        console.log('sender_id: ',sender_id,' to: ',to);
+        insert_record('<p>'+message+'</p>',to,'sent',null,'website');
+        //log('I sent ' + all_contacts[""+to+""] + ': ' + message);
+      }
+     $('#'+div_id+' #msg_text').val('');
+     $('#'+div_id+' textArea').trigger("change");
+    }else{
+      Materialize.toast('Can\'t send empty message', 1500);
+    }
+};
+ function option_model(id){
+  vibrate(100);
+  var status= blocklist_arr.indexOf(""+id+"") !=-1 ? 'Unblock' : 'Block';
+  $('#option_model .collection').html('');
+  if(!$('#blocklist_modal').is(':visible')){
+      $('#option_model .collection').append('<a id="dltbtn" href="#" onclick="confirm_model('+id+');" class="collection-item modal-close">Delete</a><a id="spambtn" href="#" onclick="confirm_spam_model('+id+');" class="collection-item modal-close">Report Spam</a>');
+  }
+
+  var html='<a id="blockbtn" href="#" onclick="block_unblock('+id+');" class="collection-item modal-close">'+status+'</a>';
+  $('#option_model .collection').append(html);
+  $('#option_model .collection').append('<a id="closebtn" href="#" class="collection-item modal-close">Cancel</a>');
+  $('#option_model').openModal();
+ }
+ function confirm_model(id){
+  $('#confirm_model a#dltbtn').attr('onclick','delete_group_record('+id+')');
+  $('#confirm_model').openModal();
+ }
+   //this is for regular feedback related to app
+$("#feedback_model #send").click(function(){
+$('#loader_model').openModal({dismissible: false,opacity: .3});
+  setTimeout(function(){
+          var subject=$('#feedback_model input#subject').val();
+          var message=$('#feedback_model #message').val();
+          var mobile=jid.split("@");
+          var param="subject="+subject+"&message="+message+"&mobile="+mobile[0];
+          $.ajax({
+                url: siteurl+"/api/feedback",
+                data:param,
+                success:  function(response){
+                   $('#loader_model').closeModal();
+                   if(response['status']=='success'){
+                       Materialize.toast('Send Successfully !', 4000) // 4000 is the duration of the toast
+                       $('#feedback_model input#subject').val('');
+                       $('#feedback_model #message').val('');
+                   }else 
+                       Materialize.toast(response['messages'], 4000) // 4000 is the duration of the toast               
+                }
+                
+        });
+      }, 1000);       
+  });
+ //this function is for sending feedback question answer feature (website)-----------------------
+ function confirm_feed_model(feed_id){
+    var answers=$('#msg_model').find("."+feed_id+" input[type='radio']:checked").val();
+    if(!answers||answers==null||answers==undefined){
+        Materialize.toast('Select any option !',1500);
+        return;
+    }
+   $('#confirm_feed_model a#dltbtn').attr('onclick','send_feedback('+feed_id+')');
+   $('#confirm_feed_model').openModal();
+ }
+ function send_feedback(feed_id){
+        $('#confirm_feed_model').closeModal();
+          var answers=$('#msg_model').find("."+feed_id+" input[type='radio']:checked").val();
+          if(!answers||answers==null||answers==undefined){
+             Materialize.toast('Select any option !',1500);
+             $('#loader_model').closeModal();
+             return;
+          }
+          var li_id=$("#msg_model").find("."+feed_id+"").closest('li').attr('id');
+      
+          var mobile=jid.split("@");
+          var param="answers="+answers+"&mobile="+mobile[0]+"&feed_id="+feed_id;
+          $.ajax({
+                url: siteurl+"/api/feedback/update",
+                data:param,
+                success:  function(response){
+                   if(response['status']=='success'){
+                       var que=$('#msg_model').find("."+feed_id+" .que").text();
+                       var message="<span id='feedback'><label class='que'>Que."+que+"</label><br/><label>Ans:"+answers+"</label></span>";
+                       var to=mobile_val[0];
+                       insert_record(message,to,'Feedback',null,'website');
+                       $('#msg_model ul.modal-content li#'+li_id+'').remove();
+                       db.transaction(function(tx) {tx.executeSql("delete from message where id IN("+li_id+")");});
+                       var ul=$('#msg_model ul.modal-content');
+                       ul.hide().fadeIn('fast');
+                       ul.animate({scrollTop: ul[0].scrollHeight}, 1000);
+                   }else 
+                       Materialize.toast(response['messages'], 4000) // 4000 is the duration of the toast         
+                  
+                }          
+          });   
+  }
+//end feedback function
+//Report Spam function ------------------------------------------------------
+ function confirm_spam_model(id){
+  $('#confirm_spam_model a#dltbtn').attr('onclick','reportSpam('+id+')');
+  $('#confirm_spam_model #reasonTextarea').val('');
+  $('#confirm_spam_model').openModal();
+ }
+ function reportSpam(mg_id){
+    $('#confirm_spam_model').closeModal();
+    var reason=$('#confirm_spam_model #reasonTextarea').val();
+    var displayName=$('ul#inbox_list li.'+mg_id+'').find('span.title').text();
+    if(displayName=='' ||displayName==undefined)
+      displayName='This';
+    var param="reason="+reason+"&mg_id="+mg_id+"&subscriber_id="+subscriber_id;;
+              $.ajax({
+                url: siteurl+"/api/reportspam",
+                data:param,
+                success:  function(response){
+                   if(response['status']=='success'){
+                    db.transaction(function(tx) {
+                        tx.executeSql("UPDATE groups SET is_blocked='true' where id='"+mg_id+"'",[],function(tx, results){
+                           Materialize.toast(''+displayName+' has been marked as spam. !', 4000);
+                           window.load_Blocklist(); 
+                        },errorCB);
+                    });//db end 
+                   }else 
+                       Materialize.toast(response['messages'], 2000) // 4000 is the duration of the toast         
+                  
+                }//end success          
+          });//end ajax call
+ }
+ //end Report Spam function-------------------------------------------------------------
+//to autogrow textarea according to user typing (reply textarea)
+$("#msg_model textArea").on("keydown keyup blur change input", function(){
+        $('#msg_model .modal-footer').css("height",1);
+        var height=this.scrollHeight+9;
+        if(height>123)
+          height=123;
+
+        $('#msg_model .modal-footer').css("height",height);
+});
+$(document).ready(function(){
+        $uploadCrop = $('#image_modal #demoupload').croppie({
+          viewport: {
+            width: 200,
+            height: 170,
+            type: 'circle'
+          },
+          /*boundary: {
+            width: 290,
+            height: 250
+          },*/
+          showZoomer:false,
+          exif: true
+        });
+
+}); //end document ready 
+function getPhoto() { 
+  try{
+      // Retrieve image file location from specified source
+      navigator.camera.getPicture(onPhotoURISuccess, onFail, {quality: 50,sourceType: Camera.PictureSourceType.PHOTOLIBRARY,destinationType: Camera.DestinationType.FILE_URI,});
+  }
+  catch(err){
+    $("#image_modal").openModal();
+    $("input#upload").click();
+    alert('error1: '+err.message);
+  }
+  // navigator.camera.getPicture(function(f) {
+  //      var newHtml = "<img style='width:100px;height:100px;' src='"+f+"'></br><span>'"+f+"'</span>";
+  //      console.log('newHtml',newHtml);    
+  //      $('body').append(newHtml);
+  //         //  images.push(f);        
+  //  }, function(e) {
+  //      alert("Error, check console.");
+  //      console.dir(e);
+  //  }, { 
+  //      quality: 50,
+  //      sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
+  //      destinationType: Camera.DestinationType.FILE_URI,        
+  //  });
+}
+function onPhotoURISuccess(imageURI) {
+    try{
+      console.log('dp imageURI: ',imageURI);
+      $("#image_modal").openModal();
+      $uploadCrop.croppie('bind', {url: imageURI});
+      $('.thumb').hide();
+    }
+    catch(err){
+      alert('error2: '+err.message);
+    }
+}
+function onFail(message) {
+    alert('Failed because: '+JSON.stringify(message));
+}
+function upload(){
+      $('#loader_model').openModal();
+      setTimeout(function(){
+        $uploadCrop.croppie('result', {
+          type: 'canvas',
+          size: 'viewport'
+        }).then(function (resp) {
+
+        $('#slide-profile #imagebase64').val(resp);
+// console.log('myform: ',$('#slide-profile #myform').serializeArray());
+        $.ajax({
+        type:'POST',
+        url:siteurl+"/api/uploadprofile2?subscriber_id="+subscriber_id,
+        data:$('#slide-profile #myform').serializeArray(),
+        dataType:'json',
+        contentType:'application/x-www-form-urlencoded;charset=UTF-8',
+        cache:false,
+        success:function(response)
+        {
+          if(response.status!='false')
+          {
+            var string = Math.random().toString(36).substring(12);
+            var imageURI=response;
+            var largeImage= $('#profile-img img#default-img');
+            largeImage.attr("src",imageURI+"?lastmod="+string);
+            var user_details=JSON.parse(localStorage.getItem("user_details"));
+            user_details['profile_image']= imageURI;
+            localStorage.setItem("user_details", JSON.stringify(user_details));
+            Materialize.toast("Successfully uploaded", 2000);
+            $("#image_modal").closeModal();
+            $('#loader_model').closeModal();
+          }
+        },
+        error:function(xhr, status, error)
+        {
+          $('#loader_model').closeModal();
+          alert(xhr);
+          alert(status);
+        }
+        });
+        });
+  },100);
+}
+</script>
+
+<link type="text/css" rel="stylesheet" href="js/ImageCropJs/croppie.css"/>
+<script type="text/javascript" src="js/ImageCropJs/croppie.min.js"></script> 
+</body>
+</html>

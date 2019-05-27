@@ -1,0 +1,30 @@
+<?php
+
+class IndexController extends ControllerBase
+{
+    public function initialize()
+    {
+        $this->tag->setTitle('');
+        parent::initialize();
+        $this->view->setTemplateAfter('mainindex');
+    }
+    public function indexAction()
+    {
+        /*if (!$this->request->isPost()) {
+            $this->flash->notice('This is a sample application of the Phalcon Framework.
+                Please don\'t provide us any personal information. Thanks');
+        }*/
+        $auth = $this->session->get('auth');
+        if($auth){
+            return $this->response->redirect('dashboard');
+        }
+    }
+    public function termsAction()
+    {
+
+    }
+    public function supportAction()
+    {
+
+    }
+}

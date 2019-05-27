@@ -1,0 +1,45 @@
+<?php
+
+use Phalcon\Mvc\Model;
+use Phalcon\Mvc\Model\Validator\Uniqueness as UniquenessValidator;
+use Phalcon\Mvc\Model\Validator\Email as EmailValidator,
+    Phalcon\Mvc\Model\Validator\StringLength as StringLengthValidator;
+
+class Subscriber extends Model
+{
+    public function validation()
+    {
+        //  $this->validate(new UniquenessValidator(array(
+        //     'field' => array('mobile', 'group_id'),
+        //     'message' => 'Sorry, The Mobile is already present in this group'
+        // )));
+        // $this->validate(new StringLengthValidator(array(
+        //     'field' => 'mobile',
+        //     'max' => 10,
+        //     'min' => 10,
+        //     'messageMaximum' => 'Enter Valid Mobile Number',
+        //     'messageMinimum' => 'Enter Valid Mobile Number'
+        // )));
+        // if ($this->validationHasFailed() == true) {
+        //     return false;
+        // }
+    }
+    
+
+    public function getSubscriberData($user_id,$g_id){
+        $this->db=$this->getDi()->getShared('db');
+        $sql="SELECT DISTINCT s.* FROM `subscriber` s,`group`g where  s.group_id=g.id AND g.id=$g_id  AND g.user_id=".$user_id;
+        $res = $this->db->query($sql)->fetchAll();
+        //echo "<pre>";
+        //print_r($res);
+        //echo "</pre>";
+        //exit();
+        $result = array();
+        foreach ($res as $key => $value) {
+            $result[$key]['id'] = $value['id'];
+            $result[$key]['mobile'] = $value['mobile'];
+            $result[$key]['name'] = $value['name'];     
+        }
+        return $result;
+    }
+}

@@ -1,0 +1,20 @@
+/*@import url("sanchar_header.css");
+@import url("sanchar_content.css");
+@import url("sanchar_table.css");
+@import url("sanchar_footer.css");
+*/
+body{
+	padding-top: 0px!important;
+}
+nav.navbar.navbar-inverse.navbar-fixed-top.nav-left{
+    background: red;
+    width:15%!important;
+    height: 100%;
+}
+.container {
+width: 80%!important;
+margin-left: 15%!important;
+}
+.container-fluid.wrapper-for-border{
+margin-left: 15%!important;
+}

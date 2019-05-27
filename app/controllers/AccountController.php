@@ -1,0 +1,531 @@
+<?php
+use Phalcon\Http\Response;
+/**
+ * AccountController
+ *
+ * Allows to authenticate users
+ */
+class AccountController extends ControllerBase
+{
+    public function initialize()
+    {
+        $this->tag->setTitle('My Account');
+        parent::initialize();
+    }
+
+    public function indexAction()
+    {
+        $auth = $this->session->get('auth');
+        //Query the active user
+         // print_r($auth);
+        $slabs='';
+        if($auth['login_type']=="Franchisee"){
+             $result = Franchisee::findFirst($auth['id']);
+             $logo =Logo::findFirst($auth['id']);
+        }else 
+        if($auth['login_type']=="Group Admin"){
+              $result = User::findFirst($auth['id']);
+             $logo=Logo::findFirst("img_src='".$result->id.".jpg'");
+             $slabs=Slabs::findFirstById($result->slab_id);
+        }else{
+             $result = User::findFirst($auth['id']);
+             $temp = User::findFirst("type='Super Admin'");
+             $logo=Logo::findFirst($temp->id);
+             $slabs=Slabs::findFirstById($result->slab_id);
+        } 
+    
+        if($result == false) {
+           return $this->response->redirect("index/index");  
+        }
+        if (!$this->request->isPost()) {
+             $this->view->setVars(array("user"=> $result,
+                                        "logo"=> $logo,
+                                        "slabs"=> $slabs));
+        }
+    }
+    public function httpapiAction()
+    {
+      $this->utils->checkAction('http_api');
+      $auth = $this->session->get('auth');
+      $user = User::findFirst($auth['id']);
+      $this->view->setVar("user",$user);
+    }
+    public function logicapiAction()
+    {
+        $this->view->disable();
+        $request=$this->request;
+        if ($request->isAjax() == true) {      
+              $url = $request->getPost('url');
+              $query_string = $_SERVER['QUERY_STRING'];
+              $data=$this->utils->curl_redirect($url,$query_string);         
+        }
+        echo $data;
+    }
+    public function detailsAction()
+    {
+          $auth = $this->session->get('auth');
+        //Query the active user
+        $slabs='';
+        if($auth['login_type']=="Franchisee"){
+             $result = Franchisee::findFirst($auth['id']);
+             $logo =Logo::findFirst($auth['id']);
+        }else{
+             $result = User::findFirst($auth['id']);
+             $temp = User::findFirst("type='Super Admin'");
+             $logo=Logo::findFirst($temp->id);
+             $slabs=Slabs::findFirstById($result->slab_id);
+        } 
+    
+        if($result == false) {
+           return $this->response->redirect("index/index");  
+        }
+        if (!$this->request->isPost()) {
+             $this->view->setVars(array("user"=> $result,
+                                        "logo"=> $logo,
+                                        "slabs"=> $slabs));
+        }
+    }
+    /**
+     * Users must use this action to change its password
+     */
+    public function changePasswordAction()
+    {
+       
+        if ($this->request->isPost()) {
+            $request=$this->request;
+            $password = $request->getPost('password');
+            $repeatPassword = $this->request->getPost('confirmPassword');
+
+           if ($password != $repeatPassword) {
+                $this->flash->error('Passwords are diferent');
+                return $this->response->redirect("account/changePassword");
+            } else {
+
+               $auth = $this->session->get('auth');
+
+               if($auth['login_type']=="Franchisee")
+                 $user = Franchisee::findFirst($auth['id']);
+               else
+                 $user = User::findFirst($auth['id']);
+
+                 $user->password = sha1($password);
+
+                if (!$user->save()) {
+                    $this->flash->error($user->getMessages());
+                } else {
+
+                    $this->flash->success('Your password changed successfully');
+                    return $this->response->redirect("account/index");
+                }
+            }
+        }
+    }
+    /*public function Delete($path)
+    {
+        if (is_dir($path) === true)
+        {
+            $files = array_diff(scandir($path), array('.', '..'));
+
+            foreach ($files as $file)
+            {
+                $this->Delete(realpath($path) . '/' . $file);
+            }
+
+            return rmdir($path);
+        }
+
+        else if (is_file($path) === true)
+        {
+            return unlink($path);
+        }
+
+        return false;
+    }*/
+    public function uploadAction()
+    {
+      
+        $this->utils->checkAction('image_message');
+  /*    $dir = $this->request->get('dir');
+        if($dir){
+        echo $dir;
+        $result=array_map('unlink', glob($dir));
+        if(count($result)>0){
+          $this->flash->success('Image remove successfully');
+          return $this->response->redirect("account/upload");
+        }else
+        {
+          $this->flash->error('Image not remove');
+          return $this->response->redirect("account/upload");
+        }
+      }
+      $auth = $this->session->get('auth');   
+      $user_id=$auth['id'];
+
+      $dir = "user_images/$user_id/images";
+      //array_map('unlink', glob("$dir/*.jpg19-Mar-2015"));
+      if (!file_exists($dir)) 
+          mkdir($dir, 0777, true);
+
+      if(is_dir($dir)) {
+        $images = scandir($dir);
+        $this->view->setVar("images",$images);
+        if($this->request->hasFiles() == true)
+        {
+          $dir='user_images//'.$user_id.'/images';
+          
+          foreach($this->request->getUploadedFiles() as $file) {
+            if($file->getSize()<=2097152){
+              // echo $file->getName(), " ", $file->getSize(), "\n";
+              //if (!file_exists($dir)) 
+                  //mkdir($dir, 0777, true);
+    
+              if($file->moveTo($dir.'//'.date('d-m-Y').'_'.$file->getName())){
+                 $this->flash->success('Image uploaded successfully');
+                 return $this->response->redirect("account/upload");       
+              }
+            }          
+            else{
+              $this->flash->error('File too large. File must be less than 2 megabytes.');
+              return $this->response->redirect("account/upload");
+            }
+            
+            
+          }
+               
+        }
+      }*/
+    }
+    /*public function removeAction()
+    {
+        //$this->view->disable();
+        $dir = $this->request->get('dir');
+        if($dir){
+        $result=array_map('unlink', glob($dir));
+        if(count($result)>0){
+          $this->flash->success('Image remove successfully');
+          return $this->response->redirect("account/upload");
+        }else
+
+        {
+          echo "Not Deleted";
+        }
+      }
+    }*/
+    public function updateAction()
+    {
+        //Get session info
+        $auth = $this->session->get('auth');
+        
+        if($auth['login_type']=="Franchisee")
+            $user = Franchisee::findFirst($auth['id']);
+        else
+            $user = User::findFirst($auth['id']);
+
+        if (!$this->request->isPost()) {
+            $this->view->setVar("user",$user);
+        } else {
+         
+            if($this->request->hasFiles() == true)
+            {
+              if($auth['login_type']=="Group Admin"){
+                 //checking if file exsists
+                 $img_path='profile/' .$user->mg_id.'.jpg';
+                 //if(file_exists($img_path)) unlink($img_path);
+                 foreach($this->request->getUploadedFiles() as $file) {
+                    $file->moveTo($img_path);
+                 }
+              }else{
+                $logo =Logo::findFirst($auth['id']);
+                foreach($this->request->getUploadedFiles() as $file) {
+                  $logo_name=$auth['id'].'_'.$file->getName(); 
+                  //$size = $file->getSize();
+                  //Move the file into the application
+                    if($file->moveTo('logos/' . $logo_name)){
+                         $logo->img_src=$logo_name;
+                         $logo->save();
+                    }
+                }
+             }
+            }//end if file
+            $request=$this->request;
+          //  print_r($request->getPost('username'));exit;
+            $user->firstname = $request->getPost('firstname', array('string', 'striptags'));
+            $user->lastname = $request->getPost('lastname', array('string', 'striptags'));
+            $user->email = $request->getPost('email', 'email');
+            //$user->mobile = $request->getPost('mobile', 'int');
+            //$user->status = $request->getPost('status');
+            $user->address = $request->getPost('address');
+            $user->city= $request->getPost('city');
+            $user->state= $request->getPost('state');
+            $user->pincode= $request->getPost('pincode','int');
+            $user->phone= $request->getPost('phone','int');
+            $user->organization = $request->getPost('organization');
+            // print_r($auth['id']);exit;
+            if($auth['login_type']=='Group Admin'){
+                if($request->getPost('default_msg_priority'))
+                  $user->default_msg_priority =$request->getPost('default_msg_priority') ;
+                else
+                  $user->default_msg_priority = 0;
+                $obj = new User();
+                $user_permission = $obj->getPermissions($auth['id']);
+                //public service start
+                if($user_permission['pincode_message'] == 'Yes'){
+                  $public_service= PublicService::findFirst("user_id=".$auth['id']."");
+                  if(!$public_service)
+                    $public_service= new PublicService();
+
+                  $public_service->user_id=$user->id;
+                  $public_service->welcome_msg=$request->getPost('welcome_msg');
+                  $public_service->save();
+                }
+                //public service end
+                //for joint start
+/*                if($user_permission['joint'] == 'Yes'){
+                  $joint_handle=str_replace("@","",$request->getPost('joint_handle'));
+                  $user->joint_handle="@".$joint_handle;
+                }*/
+                //for joint end
+            }
+            if ($user->save() == false) {
+                foreach ($user->getMessages() as $message) {
+                    $this->flash->error((string) $message);
+                }
+            return $this->response->redirect("account/update");
+            } else {
+                $this->flash->success('Your Account information  updated successfully');
+               return $this->response->redirect("account/index"); 
+            }
+        }
+    }
+    public function apiAction()
+    {   
+        $this->utils->checkAction('http_sms_forwarding_(3rd_party)');
+        $auth = $this->session->get('auth');
+        $api = Api::findFirst("user_id=".$auth['id']." and is_unicode=0");
+        if (!$this->request->isPost()) {
+            if(!$api)
+              $this->flash->error('You don\'t have Configure any ThirdParty SMS Api');
+            $this->view->setVar("api",$api);
+        } else {
+            $request=$this->request;
+            if(!$api)
+             $api=new Api();  
+             
+            $api->user_id =$auth['id'];  
+            $api->url = $request->getPost('url');
+            $api->to= $request->getPost('to');
+            $api->text = $request->getPost('text');
+            $api->max_limit = $request->getPost('max_limit', 'int');
+            
+            $api->is_logic=$request->getPost('is_logic');
+
+            if($request->getPost('status')=='on')
+                $api->status ='Enable';
+            else
+                $api->status ='Disable';
+            
+            if ($api->save() == false) {
+                foreach ($api->getMessages() as $message) {
+                    $this->flash->error((string) $message);
+                }
+            } else {
+                $this->flash->success('Api Details updated successfully');
+                return $this->response->redirect("account/api"); 
+            }
+        }
+    }
+    public function profileuploadAction()
+    {  
+         if(isset($_POST['imagebase64'])){
+            $auth = $this->session->get('auth');
+            if($auth['login_type']=="Franchisee")
+              $user = Franchisee::findFirst($auth['id']);
+            else
+              $user = User::findFirst($auth['id']);
+            $data = $_POST['imagebase64'];
+            list($type, $data) = explode(';', $data);
+            list(, $data)      = explode(',', $data);
+             $data = base64_decode($data);
+            // echo "sewak".$img_path='';
+            if($auth['login_type']=="Manager"){
+                 //checking if file exsists 
+                 $img_path='profile/' .stristr($user->jid,"@",true).'.jpg';
+                 if(file_exists($img_path)) unlink($img_path);
+                 file_put_contents($img_path, $data);
+            }else 
+            if($auth['login_type']=="Group Admin")
+            {
+
+              // $logo =Logo::findFirst($auth['id']);
+              $logo =new Logo();
+              // $img_path='logos/' .$user->id.'.jpg';
+              $img_path='profile/' .stristr($user->jid,"@",true).'.jpg';
+              file_put_contents($img_path, $data);
+              $logo->img_src=$user->id.'.jpg';
+              $logo->save();
+            }else{
+                $logo =Logo::findFirst($auth['id']);
+                print_r($this->request->hasFiles());
+                foreach($this->request->getUploadedFiles() as $file) {
+                  $logo_name=$auth['id'].'_'.$file->getName(); 
+                  $img_path='logos/'.$logo_name;
+                  file_put_contents($img_path, $data);
+                  $logo->img_src=$logo_name;
+                  $logo->save();
+                }
+            }
+          }
+   // echo $img_path;exit;
+    // Check whether the request was made with Ajax
+    if ($this->request->isAjax()) {
+        echo json_encode(array('path' =>$img_path,'status'=>'true'));
+        exit;
+    }else{
+      return $this->response->redirect("account/index");
+    }
+    }
+     public function logicAction()
+    {
+      /*  $this->utils->checkAction('http_sms_forwarding_(3rd_party)');
+        $auth = $this->session->get('auth');
+        $api = Api::findFirst("user_id=".$auth['id']."");
+        if (!$this->request->isPost()) {
+            if(!$api)
+              $this->flash->error('You don\'t have Configure any ThirdParty SMS Api');
+            $this->view->setVar("api",$api);
+        } else {
+            $request=$this->request;
+            if(!$api)
+             $api=new Api();  
+             
+            $api->user_id =$auth['id'];  
+            $api->url = $request->getPost('url');
+            $api->to= $request->getPost('to');
+            $api->text = $request->getPost('text');
+            $api->max_limit = $request->getPost('max_limit', 'int');
+            
+            $api->is_logic=$request->getPost('is_logic');
+
+            if($request->getPost('status')=='on')
+                $api->status ='Enable';
+            else
+                $api->status ='Disable';
+            
+            if ($api->save() == false) {
+                foreach ($api->getMessages() as $message) {
+                    $this->flash->error((string) $message);
+                }
+            } else {
+                $this->flash->success('Logic Api updated successfully');
+                return $this->response->redirect("account/logic"); 
+            }
+        }*/
+    }
+     public function uni_apiAction()
+    {   
+
+        $this->utils->checkAction('http_sms_forwarding_(3rd_party)');
+        $auth = $this->session->get('auth');
+        $api = Api::findFirst("user_id=".$auth['id']." and is_unicode=1");
+        if (!$this->request->isPost()) {
+            if(!$api)
+              $this->flash->error('You don\'t have Configure any ThirdParty Unicode SMS Api');
+            $this->view->setVar("api",$api);
+        } else {
+            $request=$this->request;
+            if(!$api)
+             $api=new Api();  
+            $api->user_id =$auth['id'];  
+            $api->url = trim($request->getPost('url'));
+           // $api->to= $request->getPost('to');
+           // $api->text = $request->getPost('text');
+            $api->max_limit = $request->getPost('max_limit', 'int');
+            $api->is_logic=$request->getPost('is_logic');
+            $api->is_unicode = 1;
+            if($request->getPost('status')=='on')
+                $api->status ='Enable';
+            else
+                $api->status ='Disable';
+            if ($api->save() == false) {
+                foreach ($api->getMessages() as $message) {
+                    $this->flash->error((string) $message);
+                }
+            } else {
+                $this->flash->success('Unicode Api Details updated successfully');
+                return $this->response->redirect("account/uni_api"); 
+            }
+        }
+    }
+     public function logic_bothAction()
+    { 
+     $this->utils->checkAction('http_sms_forwarding_(3rd_party)');
+        $auth = $this->session->get('auth');
+        $api = Api::findFirst("user_id=".$auth['id']." and is_unicode=0");
+        $uni_api = Api::findFirst("user_id=".$auth['id']." and is_unicode=1");
+        $this->view->setVar("uni_api",$uni_api);
+        if (!$this->request->isPost()) {
+
+            if(!$api)
+              $this->flash->error('You don\'t have Configure any ThirdParty SMS Api');
+            $this->view->setVar("api",$api);
+              if(!$uni_api)
+              $this->flash->error('You don\'t have Configure any ThirdParty Unicode Api');
+            $this->view->setVar("uni_api",$uni_api);
+
+        } else {
+          
+            $request=$this->request;
+
+               
+            if($request->getPost('is_unicode')==0){
+            if(!$api)
+                $api=new Api();   
+             $api->user_id =$auth['id'];  
+            $api->url = $request->getPost('url');
+            $api->to= $request->getPost('to');
+            $api->text = $request->getPost('text');
+            $api->max_limit = $request->getPost('max_limit', 'int');            
+            $api->is_logic=$request->getPost('is_logic');
+            if($request->getPost('status')=='on')
+                $api->status ='Enable';
+            else
+                $api->status ='Disable';
+              $api->is_unicode = 0;      
+                if ($api->save() == false) {
+                foreach ($api->getMessages() as $message) {
+                    $this->flash->error((string) $message);
+                }
+            } else {
+                $this->flash->success('Api Details updated successfully');
+                return $this->response->redirect("account/logic_both"); 
+            }     
+            }else{
+                if(!$uni_api)
+                    $uni_api=new Api();  
+            $uni_api->user_id =$auth['id'];  
+            $uni_api->url = $request->getPost('uni_url');
+            $uni_api->to= $request->getPost('uni_to');
+            $uni_api->text = $request->getPost('uni_text');
+            $uni_api->max_limit = $request->getPost('uni_max_limit', 'int');            
+            $uni_api->is_logic=$request->getPost('uni_is_logic');
+            if($request->getPost('uni_status')=='on')
+                $uni_api->status ='Enable';
+            else
+                $uni_api->status ='Disable';
+              $uni_api->is_unicode = 1;
+                if ($uni_api->save() == false) {
+                foreach ($uni_api->getMessages() as $message) {
+                    $this->flash->error((string) $message);
+                }
+            } else {
+                $this->flash->success('Unicode Api Details updated successfully');
+                return $this->response->redirect("account/logic_both"); 
+            }
+            }
+          /*  echo '<pre>';
+print_r($api);
+            exit;*/
+          
+        }
+        }
+}

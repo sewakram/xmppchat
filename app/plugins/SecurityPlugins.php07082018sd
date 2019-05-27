@@ -1,0 +1,306 @@
+<?php
+
+use Phalcon\Acl;
+use Phalcon\Acl\Role;
+use Phalcon\Acl\Resource;
+use Phalcon\Events\Event;
+use Phalcon\Mvc\User\Plugin;
+use Phalcon\Mvc\Dispatcher;
+use Phalcon\Acl\Adapter\Memory as AclList;
+/**
+ * SecurityPlugin
+ *
+ * This is the security plugin which controls that users only have access to the modules they're assigned to
+ */
+ class SecurityPlugins extends Plugin
+{
+
+	/**
+	 * Returns an existing or new access control list
+	 *
+	 * @returns AclList
+	 */
+	public function getAcl()
+	{
+
+		//throw new \Exception("something");
+
+		if (!isset($this->persistent->acl)) {
+
+			$acl = new AclList();
+
+			$acl->setDefaultAction(Acl::DENY);
+
+			//Register roles
+			$roles = array(
+				'user'  => new Role('User'),
+				'franchisee'  => new Role('Franchisee'),
+				'admin'  => new Role('Admin'),
+				'guests' => new Role('Guests')
+			);
+			foreach ($roles as $role) {
+				$acl->addRole($role);
+			}
+
+
+			//Admin resources
+			$adminResources = array(
+				'dashboard'  => array('index'),
+				'subscriber' => array('index','new','delete','edit'),
+				'account'    => array('index','update','changePassword','details'),
+				'group'      => array('index','new','delete','edit','export','import','list'),
+				'user'       => array('index','new','delete','view','changePassword','edit','forgotPassword','deposit','change_status','upcredit'),
+				'appuser'       => array('index','new','delete','view','changePassword','edit','forgotPassword','update_plan','deposit','change_status','upcredit'),
+				'franchisee' => array('index','new','delete','edit','deposit','upcredit'),
+				'schedular'  => array('index','new','delete','edit','verify'),
+				'message'    => array('send','checkBalance'),
+				'reports'    => array('index'),
+				'setting'    => array('configuration','index'),
+				'transaction'    => array('index','edit','new'),
+				'senderid'  => array('index','new','delete','edit','change_status'),
+				'slabs'  => array('index','new','delete','edit','getSlab','change_status'),
+				'permissions'  => array('index','new','delete','edit'),
+				'discount'  => array('index','new','delete','edit'),
+				'payment'    => array('deposit'),
+				'invite'    => array('index'),
+				'spam'    => array('index','suspend'),
+				'inbox'    => array('index','save','updateStatus','message','report')
+			);
+			foreach ($adminResources as $resource => $actions) {
+				$acl->addResource(new Resource($resource), $actions);
+			}
+
+			//franchisee resources
+			$franchiseeResources = array(
+				'dashboard' => array('index'),
+				//'subscriber'   => array('index','new','delete','edit'),
+				'account'   => array('index','update','changePassword','details'),
+				//'group'   => array('index','new','delete','edit','export','import','list'),
+				'user'      => array('index','new','view','deposit','update_plan','upcredit'),
+				'franchisee' => array('index','new','delete','edit','upcredit'),
+				//'schedular' => array('index','new','delete','edit'),
+				//'message'    => array('send'),
+				//'reports'    => array('index'),
+				'franchisee_plan'  => array('index','edit'),
+				'transaction'    => array('index'),
+				'payment'    => array('deposit'),
+				'invite'    => array('index'),
+			);
+			foreach ($franchiseeResources as $resource => $actions) {
+				$acl->addResource(new Resource($resource), $actions);
+			}
+
+			//User resources
+			$userResources = array(
+				'dashboard'  => array('index'),
+				'app'  => array('index','updatestatus','send_excelmsg','verify_excelmsg'),
+				'subscriber' => array('index','new','delete','edit'),
+				'account'    => array('index','update','changePassword','upload','api','details','httpapi','logicapi','profileupload','logic','uni_api','logic_both'),
+				'group'      => array('index','new','delete','edit','export','import','list','quickimport'),
+				'appuser'       => array('index','new','delete','view','changePassword','edit','forgotPassword','update_plan','deposit','change_status','upcredit'),//array('index','new','view','deposit','update_plan','upcredit','update_terms_status'),
+				'user'       => array('update_terms_status'),//old setting
+				//'franchisee' => array('index','new','delete','edit'),
+				'manager'       => array('index','new','delete','view','changePassword','edit','forgotPassword','update_plan','deposit','change_status','upcredit','setslab'),//
+				'schedular'  => array('index','new','ajaxnew','delete','edit','verify'),
+				'message'    => array('send','checkBalance','send_excelmsg','getMembers','getPincodeMembers','updatestatus','verify_contacts','send_xlmsg'),
+				'joint'    => array('index','send'),
+				'reports'    => array('index'),
+				'transaction'    => array('index'),
+				'senderid'  => array('index','new','delete'),
+				'invite'    => array('index'),
+				'inbox'    => array('index','save','updateStatus','message','report'),
+				'feedback'    => array('index','new','delete','export','results','send'),
+				'test'    => array('sendmsg','logic_both','api','send_msg','updatestatus','checkexpiry','send','send_excelmsg'),
+				'red'    => array('index','send','sends'),
+				'poll'    => array('save'),
+			);
+			foreach ($userResources as $resource => $actions) {
+				$acl->addResource(new Resource($resource), $actions);
+			}
+
+			//Public area resources
+			$publicResources = array(
+				'index'      => array('index','terms'),
+				'about'      => array('index'),
+				'errors'     => array('show404', 'show500','show401'),
+				'session'    => array('index'),
+				'contact'    => array('index', 'send','search'),
+                'admin'      => array('index','forgotPassword','changePassword','signin', 'signup','getTemplate','logout','index'),
+                'user'       => array('signin','logout','signup','makePayment','success','error','sendOTP','verifyOTP','getDistrict','getTaluka','getPincode','getstate','getAjaxPincode','checkAlreadyExits','forgotPassword','changePassword','mobile_verification'),
+                'franchisee' => array('signin','signup','logout'),
+                'cron'   	 => array('sendmsg','resend','checkexpiry'),
+                'message'    => array('delivery','api','verify','balance','reports'), 
+                'plans'      => array('index'),               
+                'features'   => array('index'),
+                'feedback'   => array('update'),
+                'help'       => array('index'),
+                'support'    => array('index'),
+                'connect'    => array('index','features','support','signin','signup'),
+                'terms'      => array('index'),
+                'comming'    => array('index'),
+                //'test'    => array('signup','logic_both','send','send_excelmsg','composeoption','inbox','feedback','follow')
+			);
+			foreach ($publicResources as $resource => $actions) {
+				$acl->addResource(new Resource($resource), $actions);
+			}
+
+
+			//Grant access to public areas to All
+			foreach ($roles as $role) {
+				foreach ($publicResources as $resource => $actions) {
+					foreach ($actions as $action){
+					$acl->allow($role->getName(), $resource, $action);
+				}
+				}
+			}
+
+			//Grant acess to admin area to role Admin
+			foreach ($adminResources as $resource => $actions) {
+				foreach ($actions as $action){
+					$acl->allow('Admin', $resource, $action);
+				}
+			}
+			//Grant acess to franchisee area to role Franchisee
+			foreach ($franchiseeResources as $resource => $actions) {
+				foreach ($actions as $action){
+					$acl->allow('Franchisee', $resource, $action);
+				}
+			}
+			//Grant acess to user area to role Users
+			foreach ($userResources as $resource => $actions) {
+
+				foreach ($actions as $action){
+					$acl->allow('User', $resource, $action);
+				}
+			}
+
+
+			//The acl is stored in session, APC would be useful here too
+			$this->persistent->acl = $acl;
+		}
+
+		return $this->persistent->acl;
+
+	}
+
+	/**
+	 * This action is executed before execute any action in the application
+	 *
+	 * @param Event $event
+	 * @param Dispatcher $dispatcher
+	 */
+	public function beforeDispatch(Event $event, Dispatcher $dispatcher)
+	{
+
+		$auth = $this->session->get('auth');
+		$login_type=$auth['login_type'];
+
+		$controller = $dispatcher->getControllerName();
+		$action = $dispatcher->getActionName();
+		$acl = $this->getAcl();
+
+
+		switch ($login_type) {
+		   	case "Franchisee":
+		        $role = 'Franchisee';
+		        break;
+		    case "Group Admin":
+		        $role = 'User';
+					/*********check permission************/	    	    
+					switch ($controller) {
+					    case "group":
+					    		$user = new User();
+			    				$user_permission = $user->getPermissions($auth['id']);
+							    if($user_permission['contact_groups'] == 'No')
+						   	   		$dispatcher->forward(array('controller' => 'errors','action'     => 'show401'));
+							    break;
+					    case "schedular":
+					    		$user = new User();
+			    				$user_permission = $user->getPermissions($auth['id']);
+								if($user_permission['message_schedular'] == 'No')
+						   	   		$dispatcher->forward(array('controller' => 'errors','action'     => 'show401'));
+							    break;
+					    case "reports":
+					    		$user = new User();
+			    				$user_permission = $user->getPermissions($auth['id']);
+								if($user_permission['read_report'] == 'No')
+						   	    	$dispatcher->forward(array('controller' => 'errors','action'     => 'show401'));
+							    break;
+					    case "feedback":
+					    		$user = new User();
+			    				$user_permission = $user->getPermissions($auth['id']);
+								if($user_permission['user_feedback'] == 'No')
+						   	    	$dispatcher->forward(array('controller' => 'errors','action'     => 'show401'));
+							    break;
+						case "joint":
+					    		$user = new User();
+			    				$user_permission = $user->getPermissions($auth['id']);
+								if($user_permission['joint'] == 'No')
+						   	    	$dispatcher->forward(array('controller' => 'errors','action'     => 'show401'));
+							    break;
+					}
+					/*********End check permission********/
+		        break;
+		    case "Manager":
+		        $role = 'User';
+					/*********check permission************/	    	    
+					switch ($controller) {
+					    case "group":
+					    		$user = new User();
+			    				$user_permission = $user->getPermissions($auth['id']);
+							    if($user_permission['contact_groups'] == 'No')
+						   	   		$dispatcher->forward(array('controller' => 'errors','action'     => 'show401'));
+							    break;
+					    case "schedular":
+					    		$user = new User();
+			    				$user_permission = $user->getPermissions($auth['id']);
+								if($user_permission['message_schedular'] == 'No')
+						   	   		$dispatcher->forward(array('controller' => 'errors','action'     => 'show401'));
+							    break;
+					    case "reports":
+					    		$user = new User();
+			    				$user_permission = $user->getPermissions($auth['id']);
+								if($user_permission['read_report'] == 'No')
+						   	    	$dispatcher->forward(array('controller' => 'errors','action'     => 'show401'));
+							    break;
+					    case "feedback":
+					    		$user = new User();
+			    				$user_permission = $user->getPermissions($auth['id']);
+								if($user_permission['user_feedback'] == 'No')
+						   	    	$dispatcher->forward(array('controller' => 'errors','action'     => 'show401'));
+							    break;
+						case "joint":
+					    		$user = new User();
+			    				$user_permission = $user->getPermissions($auth['id']);
+								if($user_permission['joint'] == 'No')
+						   	    	$dispatcher->forward(array('controller' => 'errors','action'     => 'show401'));
+							    break;
+					}
+					/*********End check permission********/
+		        break;
+		    case "Super Admin":
+		        $role = 'Admin';
+		        break;
+		    default:
+		        $role = 'Guests';
+		}
+
+		// echo $role;
+		// exit;
+		$allowed = $acl->isAllowed($role, $controller, $action);
+		if ($allowed != Acl::ALLOW) {
+			if($auth){
+				$dispatcher->forward(array(
+					'controller' => 'errors',
+					'action'     => 'show401'
+				));
+			}else{
+				$dispatcher->forward(array(
+					'controller' => 'connect',
+					'action'     => 'signin'
+				));
+			}
+			return false;
+		}
+	}
+}

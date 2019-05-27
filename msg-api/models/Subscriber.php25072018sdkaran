@@ -1,0 +1,173 @@
+<?php
+
+use Phalcon\Mvc\Model,
+    Phalcon\Mvc\Model\Validator\Uniqueness as UniquenessValidator,
+    Phalcon\Mvc\Model\Validator\StringLength as StringLengthValidator,
+
+    Phalcon\Mvc\Model\Validator\Numericality as NumericalityValidator,
+    Phalcon\Mvc\Model\Validator\Email as EmailValidator,
+    Phalcon\Mvc\Model\Message,
+    Phalcon\Mvc\Model\Validator\InclusionIn,
+    Phalcon\Mvc\Model\Validator\Uniqueness;
+class Subscriber extends Model
+{
+    public $user_type="App";
+
+    public function initialize()
+    {
+       $this->setSource("subscriber");
+       $this->useDynamicUpdate(true);
+    }
+    public function onConstruct()
+    {
+      $this->db=$this->getDi()->getShared('db');
+    }
+    public function setStatus($type)
+    {
+      $this->user_type=$type;
+    }
+    // public function beforeValidation()
+    // {
+    //     // if ($this->request->getHttpHost() !== 'admin.mydomain.com') {
+    //     //     $messages->appendMessage(
+    //     //         new Message('Only users can log on in the administration domain')
+    //     //     );
+    //     $this->status = 'Verified';
+
+    //         return false;
+    //     // }
+
+    //     // return true;
+    
+    // }
+    public function getStatus()
+    {
+      return $this->user_type;
+    }
+   
+
+    public function afterFetch()
+    {
+        // Convert the string to an array
+        // $this->status = explode(",", $this->status);
+        $this->status=$this->karan;
+
+    }
+    public function beforeSave()
+    {
+        // Convert the array into a string
+        $this->karan=$this->status;
+
+    }
+
+    public static function findFirst($parameters=null)
+    {
+ $st=str_replace("status","karan",$parameters);
+        return parent::findFirst($st);
+    }
+  
+
+
+     public function validation()
+    {
+            // $this->validate(new InclusionIn(
+            //     array(
+            //         "field"  => "app_type",
+            //         "domain" => array("Android", "iOS","Web"),
+            //         "message" => "Only Android,iOS Device allowed to register."
+            //     )
+            // ));
+            // $this->validate(new InclusionIn(
+            //     array(
+            //         "field"  => "type",
+            //         "domain" => array("BeforeDoctor", "LinkApp")
+            //     )
+            // ));
+              
+            // $this->validate(new Uniqueness(
+            //       array(
+            //         "field"   => "mobile",
+            //         "message" => "The mobile no must be unique"
+            //       )
+            // ));
+            //Year cannot be less than zero
+            /*  if ($this->year < 0) {
+                $this->appendMessage(new Message("The year cannot be less than zero"));
+            }*/
+
+            // $this->validate(new NumericalityValidator(array(
+            //   'field' => 'mobile',
+            //   "message" => "Enter Valid Mobile Number"
+            // )));
+            // $this->validate(new StringLengthValidator(array(
+            //     'field' => 'mobile',
+            //     'max' => 10,
+            //     'min' => 10,
+            //     'messageMaximum' => 'Enter Valid Mobile Number',
+            //     'messageMinimum' => 'Enter Valid Mobile Number'
+            // )));
+
+           /* $this->validate(new EmailValidator(array(
+                'field' => 'email',
+                "message" => "Enter Valid email"
+            )));*/
+            //Check if any messages have been produced
+            // if ($this->validationHasFailed() == true){
+            //     if($this->getStatus()=="App")
+            //         return false;
+            //     else
+            //         return true;
+            // }
+
+    }
+    public function updateData($mobile,$user_id,$security_code){
+     //$this->db=$this->getDi()->getShared('db');
+     $phql = "UPDATE `subscriber` s,`user`u SET s.status = 'Verified' where s.mobile=$mobile AND u.mobile=$mobile AND u.id=$user_id AND security_code='$security_code' ";
+     $res  = $this->db->query($phql);
+     return $res;
+    
+    }
+
+ public function updateDataOTP($subscriber_id,$security_code)
+    {
+        $phql = "UPDATE `subscriber` s SET s.status = 'Verified' where  s.id=$subscriber_id AND s.security_code='$security_code' ";
+        $res  = $this->db->query($phql);
+        return $res;
+    }
+    public function verifySubscriber($mobile,$access_date,$mg_id){ 
+        //$phql = "SELECT count(*) as count, s.id, s.reg_id, s.app_type,s.jid,s.mobile FROM subscriber s, permissions p WHERE s.mobile IN (".implode(",",$mobile).") AND s.status =  'Verified' AND s.last_date_access >=  '".$access_date."' AND s.id = p.subscriber_id AND p.mg_id=".$mg_id." AND p.status =  'Yes' group by s.mobile";
+    $phql = "SELECT count(*) as count, s.id, s.reg_id, s.app_type,s.jid,s.mobile,s.notification_status FROM subscriber s WHERE s.mobile IN (".implode(",",$mobile).")  AND  s.karan =  'Verified' group by s.mobile";
+    //    $phql = "SELECT count(*) as count, s.id, s.reg_id, s.app_type,s.jid,s.mobile,s.notification_status FROM subscriber s WHERE s.mobile IN (".implode(",",$mobile).") AND s.app_type !='Web' AND s.status =  'Verified' AND s.last_date_access >=  '".$access_date."' group by s.mobile";
+        $res  = $this->db->query($phql)->fetchAll();
+    //    print_r($res);
+        $result = array();
+        foreach ($res as $key => $value) {
+            $result[$value['mobile']]['id'] = $value['id'];
+            $perm=Permissions::findFirst("subscriber_id=".$value['id']." AND mg_id=$mg_id");
+            if($perm)
+                $result[$value['mobile']]['permissions'] = $perm->status;
+            else
+                $result[$value['mobile']]['permissions'] = "NULL";
+
+            $result[$value['mobile']]['reg_id'] = $value['reg_id'];
+            $result[$value['mobile']]['jid'] = $value['jid'];
+            $result[$value['mobile']]['app_type'] = $value['app_type'];
+            $result[$value['mobile']]['notification_status'] = $value['notification_status'];
+        }
+        // print_r($result);
+        return $result;
+    }
+   public function getSubsciberByPincode($pincode){
+        $pincode=implode(",",json_decode($pincode,true));
+        $phql = "SELECT mobile FROM subscriber WHERE (app_type!='Web' AND status='Verified') AND (pincode_home IN(".$pincode.") OR pincode_work IN(".$pincode."))";
+        $sub  = $this->db->query($phql);
+        //$sub->setFetchMode(Phalcon\Db::FETCH_NUM);
+        //$result=$sub->fetchAll();
+        $sub->setFetchMode(PDO::FETCH_COLUMN,0);
+        $result=$sub->fetchAll();
+        echo json_encode($result);
+        exit();
+    }
+   
+    
+}

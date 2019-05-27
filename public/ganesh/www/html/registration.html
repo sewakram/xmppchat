@@ -1,0 +1,160 @@
+
+<style>
+body {background-color: #eee;}
+.logo {
+    background-image: url("images/front-page-logo.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+    height: 57px;
+    margin: 26px auto;
+    text-align: center;
+    width: 258px;
+}
+form.register{
+  margin: auto;
+  top: 0; left: 0; bottom: 0; right: 0;
+}
+input[type=text].invalid, input[type=text]:focus.invalid, input[type=password].invalid, input[type=password]:focus.invalid, input[type=email].invalid, input[type=email]:focus.invalid, input[type=url].invalid, input[type=url]:focus.invalid, input[type=time].invalid, input[type=time]:focus.invalid, input[type=date].invalid, input[type=date]:focus.invalid, input[type=datetime-local].invalid, input[type=datetime-local]:focus.invalid, input[type=tel].invalid, input[type=tel]:focus.invalid, input[type=number].invalid, input[type=number]:focus.invalid, input[type=search].invalid, input[type=search]:focus.invalid, textarea.materialize-textarea.invalid, textarea.materialize-textarea:focus.invalid {
+    border-bottom: 2px solid #F44336;
+    box-shadow: 0 1px 0 0 #F44336;
+}
+.material-tooltip {width: 75% !important;font-size: 0.8em !important;margin-left: auto !important;left: -25px !important;right: 0 !important;margin-right: auto !important;}
+</style>
+
+<div id="register" class="container">
+<div class="logo"></div>
+ <div class="row center">
+    <form class="register">
+      
+      <div class="row">
+        <div class="input-field col s12">
+          <input id="name" type="tel" name="name1" placeholder="Please enter your name">
+          <label for="name">Name</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="input-field col s12">
+          <input id="email" type="tel" name="email" placeholder="Please enter your email">
+          <label for="name">Email</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="input-field col s12">
+          <input id="mobile" type="tel" length="10" maxlength="10" placeholder="Please enter your mobile no. here">
+          <label for="mobile">Mobile No.</label>
+        </div>
+      </div>
+      <!-- <div class="row">
+        <div class="input-field col s12">
+          <input id="pincode_home" type="tel" length="6" maxlength="6">
+          <label for="pincode_home">Pincode (Home)</label>
+          <i style="font-size:1.3em;" class="mdi-action-info right tooltipped" data-position="left" data-delay="50" data-tooltip="Pincode is used to send Public Service messages related to your area"></i>
+        </div>
+      </div> -->
+      <!-- <div class="row">
+        <div class="input-field col s12">
+          <input id="pincode_work" type="tel" length="6" maxlength="6">
+          <label for="pincode_work">Pincode (Work) <span style="font-size:80%;">[Optional]</span></label>
+        </div>
+      </div> -->
+       <p>
+      <input type="checkbox" id="terms" class="validate"/>
+      <label for="terms">I agree to the linkapp <a href="http://www.linkapp.in/terms" onClick="javascript:return openExternal(this)" >Terms of Service</a></label>
+      </p>
+      <p id="terms_error_msg" style="display:none;" class="red-text">In order to use our services, you must agree to linkapp's Terms of Service.</p>
+      <br>
+        <a class="btn waves-effect waves-light" href="#" onclick="sign_up();" id="sign_up">Register
+        <i class="mdi-content-send right"></i>
+        </a>
+    </form>
+  </div>
+</div>
+<script type="text/javascript">
+    $('input#mobile,input#pincode_home,input#pincode_work').characterCounter();
+    $('.tooltipped').tooltip({delay: 50});   
+    function redirect(page){
+            $("div#homepage").html('');
+         /*   $("div#homepage").load("html/"+page+".html");*/
+           $.ajax({cache:true,url: "html/"+page+".html",dataType:"html",
+            success:  function(response){$("#homepage").html(response);},
+            beforeSend:  function(){log('Redirecting to'+page);}});
+    }; 
+
+    if(subscriber_id !=null)
+        redirect('validate');
+
+   function sign_up(){
+
+        var mobile=$('input#mobile').val();
+        var name=$('input#name').val();
+        var email=$('input#email').val();
+        // var pincode_home=$('input#pincode_home').val();
+        // var pincode_work=$('input#pincode_work').val();
+        if(!$("#terms").is(':checked')){
+             $('#terms_error_msg').show("fast");
+             return;
+        }else{
+             $('#terms_error_msg').hide("fast");
+        }
+        if(mobile ==''|| mobile.match(/^[0-9]+$/) == null||mobile.length!=10){
+             $('input#mobile').addClass("invalid");
+             return;
+        }
+        // if(pincode_home ==''|| pincode_home.match(/^[0-9]+$/) == null||pincode_home.length!=6){
+        //      $('input#pincode_home').addClass("invalid");
+        //      return;
+        // }
+        // if(pincode_work !=''){
+        //   if(pincode_work.match(/^[0-9]+$/) == null||pincode_work.length!=6){
+        //        $('input#pincode_work').addClass("invalid");
+        //        return;
+        //   }
+        //   if(pincode_work==pincode_home){
+        //        $('input#pincode_work').addClass("invalid");
+        //        Materialize.toast("Pincode Home and Work cant be same", 4000);
+        //        return;
+        //   }
+        // }
+       $('#loader_model').openModal({dismissible: false,opacity: .3});
+  setTimeout(function(){
+        // var app_type = device.platform;
+        var app_type = 'Android';
+
+// console.log('app_type: ',app_type);
+// return;
+        var param="mobile="+mobile+"&name="+name+"&email="+email+"&app_type="+app_type+"&reg_id="+loc_Storage.getItem("reg_id")+"&company_id="+company_id;
+         console.log(param);
+        var url= siteurl+"/msg-api/subscriber/register";
+        // var url= siteurl+"/api/subscriber/register";
+        console.log(url);
+        $.ajax({
+            url: url,
+            data:param,
+            success:function(response){
+               $('#loader_model').closeModal();
+                if(response['status']=='registered'){
+                   //Materialize.toast('Successfully registered!', 4000);//alert_msg('Successfully registered');
+                   loc_Storage.setItem("subscriber_id",response['subscriber_id'] );
+                   loc_Storage.setItem("jid",Base64.decode(response['jid']));
+                   // loc_Storage.setItem("pincode_home",pincode_home);
+                   loc_Storage.setItem("mobile",mobile);
+                   loc_Storage.setItem("name",name);
+                   loc_Storage.setItem("email",email);
+                   // loc_Storage.setItem("pincode_work",pincode_work);
+                   if(response['user_details']){
+                      loc_Storage.setItem("user_details",JSON.stringify(response['user_details']));
+                   }
+                   redirect('validate');
+                }else{
+                   Materialize.toast(response['messages'], 4000);//alert_msg('Registration Failed');
+                }
+            }
+            
+            });
+    }, 1000); 
+    }; 
+   $('#loader_model').closeModal();
+ </script>

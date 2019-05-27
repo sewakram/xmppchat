@@ -1,0 +1,46 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "com.sancharapp.chat"
+    },
+    "cordova-plugin-file": {
+      "PACKAGE_NAME": "com.sancharapp.chat"
+    },
+    "cordova-plugin-file-transfer": {
+      "PACKAGE_NAME": "com.sancharapp.chat"
+    },
+    "cordova-plugin-media": {
+      "PACKAGE_NAME": "com.sancharapp.chat"
+    },
+    "cordova-plugin-network-information": {
+      "PACKAGE_NAME": "com.sancharapp.chat"
+    },
+    "cordova-plugin-sms": {
+      "PACKAGE_NAME": "com.sancharapp.chat"
+    },
+    "cordova-plugin-splashscreen": {
+      "PACKAGE_NAME": "com.sancharapp.chat"
+    },
+    "cordova-plugin-vibration": {
+      "PACKAGE_NAME": "com.sancharapp.chat"
+    },
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "com.sancharapp.chat"
+    },
+    "cordova-plugin-x-socialsharing": {
+      "PACKAGE_NAME": "com.sancharapp.chat"
+    }
+  },
+  "dependent_plugins": {
+    "es6-promise-plugin": {
+      "PACKAGE_NAME": "com.sancharapp.chat"
+    }
+  }
+}

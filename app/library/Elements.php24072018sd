@@ -1,0 +1,370 @@
+<?php
+
+use Phalcon\Mvc\User\Component;
+/**
+ * Elements
+ *
+ * Helps to build UI elements for the application
+ */
+class Elements extends Component
+{
+    private $_headerMenu = array(
+        'navbar-left' => array(
+            '' => array(
+                'caption' => '<span class="glyphicon glyphicon-home"></span> Home',
+                'action' => ''
+            ),
+            /*'dashboard' => array(
+                'caption' => '<span class="glyphicon glyphicon-home"></span> DashBoard',
+                'action' => ''
+            ),*/
+            'message' => array(
+                'caption' => '<span class="glyphicon glyphicon-envelope"></span>Message',
+                'action' => 'send',
+                'dropdown' => array(
+                    'message' => array(
+                        'caption' => '<span class="glyphicon glyphicon-pencil"></span> Compose ',
+                        'action' => 'message/send'
+                    ),'schedular' => array(
+                        'caption' => '<span class="glyphicon glyphicon-calendar"></span> Schedules ',
+                        'action' => 'schedular'
+                    ),'reports' => array(
+                        'caption' => '<span class="glyphicon glyphicon-th-list"></span> Reports ',
+                        'action' => 'reports'
+                    )
+                ),
+            ),
+            'joint' => array(
+                'caption' => '<i class="fa fa-users" aria-hidden="true"></i> Follow',
+                'action' => '',
+                'dropdown' => array(
+                    'send' => array(
+                        'caption' => '<span class="glyphicon glyphicon-arrow-up"></span> Update ',
+                        'action' => 'joint/send'
+                    ),'index' => array(
+                        'caption' => '<span class="glyphicon glyphicon-th-list"></span> Sent ',
+                        'action' => 'joint'
+                    )
+                ),
+            ),
+            'feedback' => array(
+                'caption' => '<span class="glyphicon glyphicon-pencil"></span> Feedback',
+                'action' => '',
+                'dropdown' => array(
+                    'new' => array(
+                        'caption' => '<span class="glyphicon glyphicon-plus"></span> Add Question ',
+                        'action' => 'feedback/new'
+                    ),'index' => array(
+                        'caption' => '<span class="glyphicon glyphicon-th-list"></span> Result ',
+                        'action' => 'feedback'
+                    )
+                ),
+            ),
+                  /*'schedular' => array(
+                'caption' => '<span class="glyphicon glyphicon-calendar"></span> Schedular',
+                'action' => ''
+            ),
+            'invite' => array(
+                'caption' => '<span class="glyphicon glyphicon-plus-sign"></span> Invite',
+                'action' => ''
+            ),*/
+            'group' => array(
+                'caption' => '<span class="glyphicon glyphicon-phone-alt"></span> Contacts',
+                'action' => ''
+            ),
+            'user' => array(
+                'caption' => '<span class="glyphicon glyphicon-user"></span> User',
+                'action' => ''
+            ),
+            'appuser' => array(
+                'caption' => '<span class="glyphicon glyphicon-user"></span> App Users',
+                'action' => ''
+            ),
+            'franchisee' => array(
+                'caption' => '<span class="glyphicon glyphicon-user"></span> Channel Partner',
+                'action' => ''
+            ),
+           /* 'reports' => array(
+                'caption' => '<span class="glyphicon glyphicon-th-list"></span> Reports',
+                'action' => ''
+            ),*/
+            'spam' => array(
+                'caption' => '<span class="glyphicon glyphicon-warning-sign"></span> Spam',
+                'action' => ''
+            ),
+            'setting' => array(
+                'caption' => '<span class="glyphicon glyphicon-cog"></span> Settings',
+                'action' => 'configuration'
+            ),
+            'slabs' => array(
+                'caption' => '<span class="glyphicon glyphicon-info-sign"></span> Plans',
+                'action' => ''
+            ),
+            'permissions' => array(
+                'caption' => '<span class="glyphicon glyphicon-wrench"></span> Permissions',
+                'action' => ''
+            ),
+            'features' => array(
+                'caption' => '<span class="glyphicon glyphicon-check"></span> Features',
+                'action' => ''
+            ),
+            /*'plans' => array(
+                'caption' => '<span class="glyphicon glyphicon-info-sign"></span> Plans',
+                'action' => 'index'
+            ),
+            'about' => array(
+                'caption' => '<span class="glyphicon glyphicon-user"></span> About Us',
+                'action' => 'index'
+            ),
+            'contact' => array(
+                'caption' => '<span class="glyphicon glyphicon-earphone"></span> Contact Us',
+                'action' => 'index'
+            ),*/
+/*            'help' => array(
+                'caption' => '<span class="glyphicon glyphicon-question-sign"></span> Help',
+                'action' => 'index'
+            ),*/
+          'support' => array(
+                'caption' => '<span class="glyphicon glyphicon-question-sign"></span> Support',
+                'action' => ''
+            ),
+        ),
+        'navbar-right' => array(
+                'inbox' => array(
+                    'caption' => '<span class="glyphicon glyphicon-bell "></span> Inbox ',
+                    'action' => ''
+                ),
+                'account' => array(
+                    'caption' => '<span class="glyphicon glyphicon-user"></span> My Account ',
+                    'action' => '',
+                    'dropdown' => array(
+                    'account' => array(
+                        'caption' => '<span class="glyphicon glyphicon-user"></span> My Profile ',
+                        'action' => 'account'
+                    ),'transaction' => array(
+                        'caption' => '<span class="glyphicon glyphicon-list-alt"></span> Transactions ',
+                        'action' => 'transaction'
+                    ),'smssetting' => array(
+                        'caption' => '<span class="glyphicon glyphicon-cog"></span> SMS Settings',
+                        'action' => '',
+                        'subdropdown' => array(
+                                        'logic' => array(
+                                            'caption' => '<span class="glyphicon glyphicon-envelope"></span> Logic',
+                                            'action' => 'account/logic'
+                                        ),
+                                        'thirdParty' => array(
+                                            'caption' => '<span class="glyphicon glyphicon-envelope"></span> Others</a',
+                                            'action' => 'account/api'
+                                        ))
+                    )
+                    ,'invite' => array(
+                        'caption' => '<span class="glyphicon glyphicon-plus-sign"></span> Invite ',
+                        'action' => 'invite'
+                    )),
+                ),
+           /* 'transaction' => array(
+                'caption' => '<span class="glyphicon glyphicon-list-alt"></span> Transactions',
+                'action' => ''
+            ),
+            'user' => array(
+                array(
+                    'caption' => '<span class="glyphicon glyphicon-user"></span> Sign Up',
+                    'action' => 'signup'
+                ),
+                array(
+                    'caption' => '<span class="glyphicon glyphicon-log-in"></span> Sign In',
+                    'action' => 'signin'
+                )
+            ),*/
+        )
+    );
+
+    private $_tabs = array(
+        'Configuration' => array(
+            'controller' => 'setting',
+            'action' => 'configuration',
+            'any' => false
+        ),
+    );
+
+    /**
+     * Builds header menu with left and right items
+     *
+     * @return string
+     */
+    public function getMenu()
+    {
+
+        	$auth = $this->session->get('auth');
+        	$login_type = $auth['login_type'];
+        	if($login_type!="Franchisee" && !empty($auth)){
+	        	$user = new User();
+	        	$user_permission = $user->getPermissions($auth['id']);
+                $user_data=User::findFirst($auth['id']);
+                $count_temp =count(Inbox::find("read_status='false' AND mg_id=".$user_data->mg_id.""));
+                $msg_count='';
+                $bell_class='';
+                if($count_temp!= 0){$bell_class='red';$msg_count="(".$count_temp.")";}
+	        }
+
+            switch ($login_type) {
+                case "Franchisee":
+                     unset($this->_headerMenu['navbar-left']['']);
+                     unset($this->_headerMenu['navbar-left']['setting']);
+                     unset($this->_headerMenu['navbar-right']['user']);
+                     unset($this->_headerMenu['navbar-left']['group']);
+                     unset($this->_headerMenu['navbar-left']['franchisee']);
+                     unset($this->_headerMenu['navbar-left']['message']);
+                     //unset($this->_headerMenu['navbar-left']['senderid']);
+                     unset($this->_headerMenu['navbar-left']['slabs']);
+                     unset($this->_headerMenu['navbar-left']['permissions']);
+                     unset($this->_headerMenu['navbar-right']['account']['dropdown']['invite']);
+                     unset($this->_headerMenu['navbar-right']['inbox']);
+                     $this->_headerMenu['navbar-right']['franchisee'] = array(
+                        'caption' => '<span class="glyphicon glyphicon-log-out"></span> Log Out',
+                        'action' => 'logout'
+                     );
+                     unset($this->_headerMenu['navbar-left']['features']);
+                     unset($this->_headerMenu['navbar-left']['plans']);
+                     unset($this->_headerMenu['navbar-left']['feedback']);
+                     unset($this->_headerMenu['navbar-left']['spam']);
+                     unset($this->_headerMenu['navbar-left']['support']);
+                     unset($this->_headerMenu['navbar-left']['joint']);
+                     unset($this->_headerMenu['navbar-right']['account']['dropdown']['smssetting']);
+                     break;
+                case "Group Admin":
+                     unset($this->_headerMenu['navbar-left']['']);
+                     unset($this->_headerMenu['navbar-left']['setting']);
+                     unset($this->_headerMenu['navbar-left']['slabs']);
+                     unset($this->_headerMenu['navbar-left']['franchisee']);
+                     unset($this->_headerMenu['navbar-left']['user']);
+                     unset($this->_headerMenu['navbar-left']['discount']);
+                     unset($this->_headerMenu['navbar-left']['permissions']);
+                     if($user_permission['contact_groups'] == 'No')
+                     	unset($this->_headerMenu['navbar-left']['group']);
+                     if($user_permission['message_schedular'] == 'No')
+                     	unset($this->_headerMenu['navbar-left']['message']['dropdown']['schedular']);
+                     if($user_permission['read_report'] == 'No')
+                     	unset($this->_headerMenu['navbar-left']['message']['dropdown']['reports']);
+                     if($user_permission['user_feedback'] == 'No')
+                        unset($this->_headerMenu['navbar-left']['feedback']);
+                     if($user_permission['joint'] == 'No')
+                        unset($this->_headerMenu['navbar-left']['joint']);
+                     if($user_permission['http_sms_forwarding_(3rd_party)'] == 'No')
+                        unset($this->_headerMenu['navbar-right']['account']['dropdown']['smssetting']);
+
+                     $this->_headerMenu['navbar-right']['inbox']['caption']='<span class="glyphicon glyphicon-bell '.$bell_class.'"></span>Inbox <span class="msg_count">'.$msg_count.'</span>';
+                     $this->_headerMenu['navbar-right']['user'] = array(
+                        'caption' => '<span class="glyphicon glyphicon-log-out"></span> Log Out',
+                        'action' => 'logout'
+                     );
+                     unset($this->_headerMenu['navbar-left']['features']);
+                     unset($this->_headerMenu['navbar-left']['plans']);
+                     unset($this->_headerMenu['navbar-left']['spam']);
+                     unset($this->_headerMenu['navbar-left']['support']);
+                     break;
+                case "Super Admin":
+                     unset($this->_headerMenu['navbar-left']['']);
+                     unset($this->_headerMenu['navbar-left']['group']);
+                     unset($this->_headerMenu['navbar-left']['message']);
+                     unset($this->_headerMenu['navbar-right']['user']);
+                     unset($this->_headerMenu['navbar-right']['account']['dropdown']['invite']);
+                     $this->_headerMenu['navbar-right']['inbox']['caption']='<span class="glyphicon glyphicon-bell '.$bell_class.'"></span>Inbox <span class="msg_count">'.$msg_count.'</span>';
+                     
+                     $this->_headerMenu['navbar-right']['admin'] = array(
+                        'caption' => '<span class="glyphicon glyphicon-log-out"></span> Log Out',
+                        'action' => 'logout'
+                     );
+                     unset($this->_headerMenu['navbar-left']['features']);
+                     unset($this->_headerMenu['navbar-left']['plans']);
+                     unset($this->_headerMenu['navbar-left']['feedback']);
+                     /*unset($this->_headerMenu['navbar-left']['dashboard']);*/
+                     unset($this->_headerMenu['navbar-left']['support']);
+                     unset($this->_headerMenu['navbar-left']['joint']);
+                     unset($this->_headerMenu['navbar-right']['account']['dropdown']['smssetting']);
+                     break;
+                default:
+                     unset($this->_headerMenu['navbar-right']['account']);
+                     unset($this->_headerMenu['navbar-left']['group']);
+                     unset($this->_headerMenu['navbar-left']['user']);
+                     unset($this->_headerMenu['navbar-left']['message']);
+                     unset($this->_headerMenu['navbar-left']['setting']);
+                     unset($this->_headerMenu['navbar-left']['slabs']);
+                     unset($this->_headerMenu['navbar-left']['permissions']);
+                     unset($this->_headerMenu['navbar-left']['franchisee']);
+                     unset($this->_headerMenu['navbar-left']['discount']);
+                     unset($this->_headerMenu['navbar-right']['inbox']);
+                     unset($this->_headerMenu['navbar-left']['feedback']);
+                     unset($this->_headerMenu['navbar-left']['spam']);
+                     unset($this->_headerMenu['navbar-left']['joint']);
+/*                     $this->_headerMenu['navbar-right']['#'] = array(
+                        'caption' => '<span class="app_btn glyphicon glyphicon-download"></span>',
+                        'action' => '#'
+                     );*/
+            }
+
+        $controllerName = $this->view->getControllerName();
+        foreach ($this->_headerMenu as $position => $menu) {
+            echo '<div class="nav-collapse">';
+            echo '<ul class="nav navbar-nav ', $position, '">';
+
+            foreach ($menu as $controller => $option) {   
+                    //code to sub menu start   
+                    // echo'<pre>';print_r($option);
+                    if(array_key_exists("dropdown",$option)){
+                        if ($controllerName == $controller) 
+                            echo '<li class="active dropdown">';
+                        else 
+                            echo '<li class="dropdown">';
+                        echo '<a href="#" class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false">'.$option['caption'].' <span class="caret"></span></a>';
+                        //echo $this->tag->linkTo(array(trim($controller) . '/' . $option['action'], $option['caption']));
+                        echo '<ul class="dropdown-menu">';
+                        foreach ($option['dropdown'] as $key2 =>$value2) {
+                                if(array_key_exists("subdropdown",$value2)){
+                                    echo '<li class="dropdown-submenu">';
+                                    echo $this->tag->linkTo('/' . $value2['action'], $value2['caption']);
+                                    echo '<ul class="dropdown-menu">';
+                                    foreach ($value2['subdropdown'] as $key3 =>$value3)
+                                        echo "<li>".$this->tag->linkTo('/' . $value3['action'], $value3['caption'])."</li>";
+                                    
+                                    echo '</ul><li>';
+                                }else{
+                                    echo "<li>".$this->tag->linkTo('/' . $value2['action'], $value2['caption'])."</li>";
+                                }
+                        }
+                        echo '</ul>';
+                    }else{
+                    //END code to sub menu 
+                        if ($controllerName == $controller) 
+                            echo '<li class="active">';
+                        else 
+                            echo '<li>';
+                        echo $this->tag->linkTo(trim($controller) . '/' . $option['action'], $option['caption']);
+                    }
+                    echo '</li>';
+            }
+            echo '</ul>';
+            echo '</div>';
+        }
+
+    }
+
+    /**
+     * Returns menu tabs
+     */
+    public function getTabs()
+    {
+        $controllerName = $this->view->getControllerName();
+        $actionName = $this->view->getActionName();
+        echo '<ul class="nav nav-tabs">';
+        foreach ($this->_tabs as $caption => $option) {
+            if ($option['controller'] == $controllerName && ($option['action'] == $actionName || $option['any'])) {
+                echo '<li class="active">';
+            } else {
+                echo '<li>';
+            }
+            echo $this->tag->linkTo($option['controller'] . '/' . $option['action'], $caption), '<li>';
+        }
+        echo '</ul>';
+    }
+}

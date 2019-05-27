@@ -1,0 +1,21 @@
+[13-Jul-2018 10:07:23 UTC] Hello, errors!
+[13-Jul-2018 10:07:23 UTC] [37mjaxl_exception:66 - 2018-07-13 10:07:23 - error handler called with 2, mkdir(): Permission denied, /var/www/html/msg-api/JAXL/jaxl.php, 173[0m
+[13-Jul-2018 10:07:23 UTC] [33mjaxl_exception:48 - 2018-07-13 10:07:23 - got jaxl exception construct with mkdir(): Permission denied, 2, /var/www/html/msg-api/JAXL/jaxl.php, 173[0m
+[13-Jul-2018 10:07:23 UTC] [37mjaxl_exception:75 - 2018-07-13 10:07:23 - exception handler catched {}[0m
+[13-Jul-2018 10:07:23 UTC] [32mjaxl:230 - 2018-07-13 10:07:23 - cleaning up pid and unix sock files[0m
+[13-Jul-2018 10:07:23 UTC] [37mjaxl_exception:66 - 2018-07-13 10:07:23 - error handler called with 2, unlink(priv_dir/run/jaxl_10822.pid): No such file or directory, /var/www/html/msg-api/JAXL/jaxl.php, 231[0m
+[13-Jul-2018 10:07:23 UTC] [37mjaxl_exception:66 - 2018-07-13 10:07:23 - error handler called with 2, unlink(priv_dir/sock/jaxl_10822.sock): No such file or directory, /var/www/html/msg-api/JAXL/jaxl.php, 232[0m
+[13-Jul-2018 10:11:54 UTC] Hello, errors!
+[13-Jul-2018 10:11:54 UTC] [37mjaxl_exception:66 - 2018-07-13 10:11:54 - error handler called with 2, mkdir(): Permission denied, /var/www/html/msg-api/JAXL/jaxl.php, 173[0m
+[13-Jul-2018 10:11:54 UTC] [33mjaxl_exception:48 - 2018-07-13 10:11:54 - got jaxl exception construct with mkdir(): Permission denied, 2, /var/www/html/msg-api/JAXL/jaxl.php, 173[0m
+[13-Jul-2018 10:11:54 UTC] [37mjaxl_exception:75 - 2018-07-13 10:11:54 - exception handler catched {}[0m
+[13-Jul-2018 10:11:54 UTC] [32mjaxl:230 - 2018-07-13 10:11:54 - cleaning up pid and unix sock files[0m
+[13-Jul-2018 10:11:54 UTC] [37mjaxl_exception:66 - 2018-07-13 10:11:54 - error handler called with 2, unlink(priv_dir/run/jaxl_10815.pid): No such file or directory, /var/www/html/msg-api/JAXL/jaxl.php, 231[0m
+[13-Jul-2018 10:11:54 UTC] [37mjaxl_exception:66 - 2018-07-13 10:11:54 - error handler called with 2, unlink(priv_dir/sock/jaxl_10815.sock): No such file or directory, /var/www/html/msg-api/JAXL/jaxl.php, 232[0m
+[13-Jul-2018 10:11:57 UTC] Hello, errors!
+[13-Jul-2018 10:11:57 UTC] [37mjaxl_exception:66 - 2018-07-13 10:11:57 - error handler called with 2, mkdir(): Permission denied, /var/www/html/msg-api/JAXL/jaxl.php, 173[0m
+[13-Jul-2018 10:11:57 UTC] [33mjaxl_exception:48 - 2018-07-13 10:11:57 - got jaxl exception construct with mkdir(): Permission denied, 2, /var/www/html/msg-api/JAXL/jaxl.php, 173[0m
+[13-Jul-2018 10:11:57 UTC] [37mjaxl_exception:75 - 2018-07-13 10:11:57 - exception handler catched {}[0m
+[13-Jul-2018 10:11:57 UTC] [32mjaxl:230 - 2018-07-13 10:11:57 - cleaning up pid and unix sock files[0m
+[13-Jul-2018 10:11:57 UTC] [37mjaxl_exception:66 - 2018-07-13 10:11:57 - error handler called with 2, unlink(priv_dir/run/jaxl_10876.pid): No such file or directory, /var/www/html/msg-api/JAXL/jaxl.php, 231[0m
+[13-Jul-2018 10:11:57 UTC] [37mjaxl_exception:66 - 2018-07-13 10:11:57 - error handler called with 2, unlink(priv_dir/sock/jaxl_10876.sock): No such file or directory, /var/www/html/msg-api/JAXL/jaxl.php, 232[0m

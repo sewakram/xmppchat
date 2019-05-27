@@ -1,0 +1,245 @@
+
+<div id="validate" class="container">
+   
+      <h2>validate </h2><p>Please check your SMS inbox for OTP</p><p class="green-text" id="counter"></p>
+       <div class="row">
+        <div class="input-field col s12">
+          <input disabled id="mobile" type="tel" length="10" maxlength="10">
+          <label class="active" for="mobile">Mobile</label>
+        </div>
+        <div class="input-field col s12">
+          <label for="security_code">Enter OTP:</label>
+          <input type="tel" id="security_code" name="security_code">
+            <a class="btn waves-effect waves-light" href="#" onclick="validate();" id="validate_btn">Validate
+            <i class="mdi-action-done right"></i>
+            </a>
+            <a class="disabled btn waves-effect waves-light" href="#" onclick="resendOTP();" id="otp_btn">Resend OTP
+            <i class="mdi-navigation-refresh right"></i>
+            </a>
+            <a href="#changeNumber_modal" class="btn waves-effect waves-light modal-trigger" id="back_btn">Change Number<i class="mdi-content-send right"></i>
+            </a>
+        </div>
+       </div>
+</div>
+<!-- changeNumber_modal -->
+  <div id="changeNumber_modal" class="modal">
+    <div class="">
+    <div class="modal-content container">
+      <h4 class="red-text">Change Number</h4>
+      <div style="margin-top:20px;margin-bottom:0px;" class="row">
+      <div class="input-field col s12">
+          <input id="mobile_new" type="tel" length="10" maxlength="10">
+          <label for="mobile_new">New Number</label>
+      </div>
+    </div>
+    </div>
+    <div class="footer center">
+     <a onclick="changeNumber();" id="dltbtn" class="waves-effect waves-blue btn-flat" href="#">Ok</a>
+     <a id="cacel_btn" class="modal-close waves-effect waves-blue btn-flat" href='#'>Cancel</a>
+    </div>
+  </div>
+</div>
+<!-- end changeNumber_modal -->
+  <script type="text/javascript">
+  $('.modal-trigger').leanModal();
+  $("#validate #mobile").val(loc_Storage.getItem("mobile"));
+  $("#validate #security_code").focus();
+  var count = 59;
+  timer = setInterval(function() {
+    $("#counter").html('Wait '+count--);
+    if(count == 0){ 
+       $("#validate #otp_btn").removeClass("disabled");
+       clearInterval(timer);
+       $("#counter").html('');
+    }
+   }, 1000);
+  function resendOTP(){
+    var param="subscriber_id="+loc_Storage.getItem("subscriber_id")+"&mobile="+loc_Storage.getItem("mobile");
+    $.ajax({
+            url: siteurl+"/api/resendOTP",
+            data:param,
+            success:function(response){
+                if(response['status']=='true'){
+                   Materialize.toast('You will get OTP Shortly!', 4000);//alert_msg('Successfully registered');
+                }else{
+                   Materialize.toast(response['messages'], 4000);//alert_msg('Registration Failed');
+                }
+            }
+    });
+    $("#validate #otp_btn").addClass("disabled");
+    clearInterval(window.timer);
+    var count = 59;
+    timer = setInterval(function() {
+    $("#counter").html('Wait '+count--);
+    if(count == 0){ 
+        $("#validate #otp_btn").removeClass("disabled");
+        clearInterval(timer);
+        $("#counter").html('');
+    }
+    }, 1000);
+  }
+
+  function changeNumber(){
+        var mobile_new=$('input#mobile_new').val();
+        var pincode_home=loc_Storage.getItem("pincode_home");
+        var pincode_work=loc_Storage.getItem("pincode_work");
+        if(mobile_new==loc_Storage.getItem("mobile")){
+          Materialize.toast('Enter new mobile number', 2000);//alert_msg('Registration Failed');
+          return;
+        }
+        if(mobile_new ==''|| mobile_new.match(/^[0-9]+$/) == null||mobile_new.length!=10){
+             $('input#mobile_new').addClass("invalid");
+             return;
+        }
+       $('#loader_model').openModal({dismissible: false,opacity: .3});
+       setTimeout(function(){
+        var app_type = device.platform;
+        var param="mobile="+mobile_new+"&pincode_home="+pincode_home+"&pincode_work="+pincode_work+"&app_type="+app_type+"&reg_id="+loc_Storage.getItem("reg_id");
+         
+        $.ajax({
+            url: siteurl+"/api/subscriber/register",
+            data:param,
+            success:function(response){
+               $('#loader_model').closeModal();
+                if(response['status']=='registered'){
+                   //Materialize.toast('Successfully registered!', 4000);//alert_msg('Successfully registered');
+                   loc_Storage.setItem("subscriber_id",response['subscriber_id'] );
+                   loc_Storage.setItem("jid",Base64.decode(response['jid']));
+                   loc_Storage.setItem("pincode_home",pincode_home);
+                   loc_Storage.setItem("mobile",mobile_new);
+                   loc_Storage.setItem("pincode_work",pincode_work);
+                   if(response['user_details']){
+                      loc_Storage.setItem("user_details",JSON.stringify(response['user_details']));
+                   }
+                   location.reload();
+                }else{
+                   Materialize.toast(response['messages'], 4000);//alert_msg('Registration Failed');
+                }
+            }
+            
+            });
+    }, 1000); 
+
+  }
+function redirectAppIntroPage(){
+  $('#homepage').html('');
+  $.ajax({cache:true,url: "html/appintro.html",dataType:"html",success:  function(response){$("#homepage").html(response);},beforeSend:  function(){log('Loading AppIntro Page');}});
+}
+  function access_ServerConfig(subscriber_id){
+    var pincode_home=loc_Storage.getItem("pincode_home");
+    var pincode_work=loc_Storage.getItem("pincode_work");
+    var param="subscriber_id="+subscriber_id+"&pincodes="+pincode_home+','+pincode_work;
+    $.ajax({
+      url: siteurl+"/api/getConfig",
+      data:param,
+      success:  function(response){
+          console.log(response);
+          log('Server Blocklist');
+          var count=response.length;
+          log(count);
+          if(count==0)
+            redirectAppIntroPage();
+
+              db.transaction(function(tx) {
+                  $.each(response, function(i, val) {
+                   if("blocklist" in val) {
+                      $.each(val["blocklist"], function(j, val2) {
+                          tx.executeSql("INSERT OR REPLACE into groups (id,displayName,is_verified,is_blocked,photo) values ('"+val2['mobile']+"','"+val2['name']+"','false','true','"+val2['mobile']+".jpg')",[],function(tx, results){
+                              log('Block Record Inserted');
+                            },errorCB);
+                      })//end each loop blocklist
+                    }
+                  if("default_messages" in val) {
+                    var d = new Date();
+                    datetime=d.toJSON().slice(0,10) +' '+d.toTimeString().slice(0,9);
+                      $.each(val["default_messages"], function(k, val3) {
+                      tx.executeSql("insert into message (multimedia,datetime,read_status,group_id,type,source,msg_id) values (?,?,?,?,?,?,?)",[$.trim(val3['welcome_msg']),datetime,'false',val3['mobile'],'received','website','null'],function(tx, results){
+                          //insert in group table 
+                          if(lookup[''+val3['mobile']+'']==undefined){
+                            tx.executeSql("INSERT into groups (id,displayName,is_verified,is_blocked,photo) values ('"+val3['mobile']+"','"+val3['name']+"','false','false','"+val3['mobile']+".jpg')",[]);
+                            lookup[val3['mobile']] ={displayName:val3['name'],is_verified:'false'};
+                          }else{
+                            tx.executeSql("UPDATE groups SET displayName='"+val3['name']+"' WHERE id='"+val3['mobile']+"'",[]);
+                          }
+                       },errorCB);
+                      if(val["default_messages"].length-1<=k)
+                        redirectAppIntroPage();
+                      })//end each loop default message
+                  }
+                  });//end outer main each loop traverse for blocklist and default message save into db
+              },errorCB)
+      },//end sucess
+      error: function() { redirectAppIntroPage();} 
+    });//end ajax
+}
+    function validate(){
+      clearInterval(timer);
+      var security_code=$('input#security_code').val();
+      if(security_code ==''||security_code==null){
+         $('input#security_code').addClass("invalid");
+         return;
+      }else{
+        $('input#security_code').removeClass("invalid");
+      }
+      $('#loader_model').openModal({dismissible: false,opacity: .3});
+  setTimeout(function(){
+      var subscriber_id=loc_Storage.getItem("subscriber_id");
+      var param="subscriber_id="+subscriber_id+"&security_code="+security_code;
+      $.ajax({
+            url: siteurl+"/api/subscriber/validate",
+            data:param,
+            success:  function(response){
+               if(response['status']=='success'){
+                  loc_Storage.setItem("reg_status", "true");
+                  loc_Storage.setItem("j_pass",Base64.decode(response['j_pass']));
+                  loc_Storage.setItem("GCM_refresh_date",new Date().getTime());
+                    if(loc_Storage.getItem("last_access_date")==null){
+                     /* var d = new Date();
+                      last_access_date= d.toJSON().slice(0,10) +' 00:00:00';*/
+                      loc_Storage.setItem("last_access_date",response['last_access_date']);
+                    }
+                  //contact_sync();
+                  access_ServerConfig(subscriber_id);
+              }else {
+                  $('#loader_model').closeModal();
+                  loc_Storage.setItem("reg_status", "false");
+                  Materialize.toast('Invalid OTP!', 4000);/*alert_msg('Invalid Security Code');  */
+              }           
+            }
+            
+            })
+  }, 1000); 
+    };
+
+  function onSMSArrive(e){
+    console.log('onSMSArrive');
+    try{
+    var sms = e.data;
+    var sms_body=sms["body"];
+    if(sms_body.indexOf("LinkApp") > -1){
+        var pin=sms_body.split('is')[1].trim();
+        console.log(pin);
+        $('input#security_code').val(pin);
+        if(SMS) SMS.stopWatch(function(){
+          console.log('watching stopped');
+        }, function(){
+          console.log('failed to stop watching');
+        });
+        validate();
+    }  
+    }catch(err){
+        alert(err.message);
+    }       
+  }
+  if(SMS) SMS.startWatch(function(){
+    console.log('success to start SMS watching');
+    document.addEventListener('onSMSArrive', onSMSArrive);
+  }, function(){
+    console.log('failed to start SMS watching');
+  });
+ </script>
+<STYLE TYPE="text/css">
+a.btn{text-transform: none;}
+a.disabled{pointer-events:none;}
+#validate a#validate_btn,#validate a#otp_btn,#validate a#back_btn{min-width: 14em;}
+</STYLE>

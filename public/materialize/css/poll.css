@@ -1,0 +1,13 @@
+.table-bordered{ border: solid 1px #999999; }
+.tabs li a{ color: #004D9B !important; }
+#body .header{ background-color: #084F70; height: 60px; padding: 10px; }
+#body .header span{ font-size: 20px; font-weight: 1000; color: #fff; margin-top: 100px;  }
+
+
+#body .body{ background-color: #039BDC; height: 100%; }
+#body .body .container .body-header{ text-align: center; font-size: 30px; color: white; padding: 20px 0 20px 0; display: block;  }
+#body .body .container .poll-body{ display: block; background-color: #FFFFFF; width: 100%; height: auto; }
+#body .body .container .poll-body .wrap-form{ width: 92%; margin: 0 auto; }
+#body .body .container .poll-body .wrap-form .textarea-que{ font-size: 23px; text-indent: 8px; color: #004D9B; }
+#body .body .container .poll-body .wrap-form input[type=text]{ color: #004D9B; text-indent: 8px; border: solid 1px #9e9e9e; height: 2rem; font-size: 1rem; margin: 5px 0 8px 0;
+     }
